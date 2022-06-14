@@ -287,7 +287,12 @@ exports.deleteArea = async (req, res, next) => {
 };
 exports.deleteMine = async (req, res, next) => {
   const data = await postgress.deleteMine(req.params.id);
-  res.send(data.rows);
+  if(data.row == undefined) {
+    res.send("err")
+  } else {
+    res.send(data.rows);
+  }
+ 
 };
 exports.deleteRoute = async (req, res, next) => {
   const data = await postgress.deleteRoute(req.params.id);
