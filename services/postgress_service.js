@@ -5,6 +5,7 @@ const client = new Client({
   database: "dfov6ifh4k5mjh",
   host: "ec2-23-23-182-238.compute-1.amazonaws.com",
   port: 5432,
+  ssl:{ rejectUnauthorized: false }
 });
 
 exports.connect = async () => {
