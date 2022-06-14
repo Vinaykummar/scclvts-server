@@ -287,7 +287,7 @@ exports.deleteArea = async (req, res, next) => {
 };
 exports.deleteMine = async (req, res, next) => {
   const data = await postgress.deleteMine(req.params.id);
-  if(data.row == undefined) {
+  if(data == undefined) {
     res.send("err")
   } else {
     res.send(data.rows);
