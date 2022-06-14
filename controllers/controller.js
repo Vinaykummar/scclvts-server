@@ -234,13 +234,14 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
         console.log(sql); 
         const trip_info = await postgress.createTrip_Detail(sql);
         console.log(trip_info);
+        res.send(true);
         break;
       
       case route_points.length -1 : 
-      console.log("trip end");
+      console.log("trip end");res.send(true);
         break;
     
-      default:  console.log("trip running");
+      default:  console.log("trip running");res.send(true);
         break;
     }
   }
