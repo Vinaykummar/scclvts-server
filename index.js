@@ -6,7 +6,7 @@ var app = express();
 
 app.use(router);
 
-app.listen(8080, () => {
-    console.log("Server listsening at port 8080");
+app.listen(process.env.PORT, () => {
+    console.log("Server listsening at port " + process.env.PORT);
     postgress.connect();
 });
