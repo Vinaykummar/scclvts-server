@@ -409,10 +409,20 @@ exports.deleteArea = async (area_id) => {
   const data = await client.query(query);
   return data;
 };
-exports.deleteMine = async (mine_id) => {
+exports.deleteMine = (mine_id) => {
   const query = "delete from mines where mine_id =" + mine_id;
-  const data = await client.query(query);
-  return data;
+  client.query(query).then((res) => {
+    return res;
+  }).catch((err) => {
+    console.log(err);
+  })
+  // client.query(query, (err,res) => {
+  //   if(err) {
+  //     console.log(err.stack);
+  //   } else {
+  //     return res;
+  //   }
+  // });
 };
 
 exports.deleteRouteConfig = async (id) => {
