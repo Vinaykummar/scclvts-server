@@ -310,6 +310,30 @@ exports.getRouteDetails = async (area_id) => {
     return data;
 };
 
+exports.getRouteDetailsByRouteId = async (route_id) => {
+    const query = `
+SELECT 
+routes.route_id,
+routes.route_name,
+rfids.rfid_ip_address,
+rfids.rfid_name,
+rfids.rfid_front_cam_ip_address,
+rfids.rfid_top_cam_ip_address,
+mines.mine_name,
+areas.area_name
+FROM 
+routes 
+INNER JOIN route_config ON route_config.route_id = routes.route_id 
+INNER JOIN rfids ON rfids.rfid_id = route_config.rfid_id
+INNER JOIN mines ON mines.mine_id = rfids.mine_id
+INNER JOIN areas ON areas.area_id = rfids.area_id
+where route_config.route_id = ` + route_id + ``;
+    console.log(query);
+    const data = await client.query(query);
+    return data;
+};
+
+
 exports.getRouteConfigByRoute = async (route_id) => {
     const query = "select * from route_config where route_id =" + route_id;
     const data = await client.query(query);
