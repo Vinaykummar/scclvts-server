@@ -105,6 +105,12 @@ exports.getRouteDetails = async (req, res, next) => {
     res.send(data.rows);
 };
 
+exports.getRouteDetailsByRouteId = async (req, res, next) => {
+    console.log(req.params.route_id);
+    const data = await postgress.getRouteDetailsByRouteId(req.params.route_id);
+    res.send(data.rows);
+};
+
 exports.createVehicle = async (req, res, next) => {
     console.log(req.params.name);
     console.log(req);

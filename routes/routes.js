@@ -7,6 +7,7 @@ router.get("/regions", controller.getRegions);
 router.get("/areas", controller.getAreas);
 router.get("/routes", controller.getRoutes);
 router.get("/routesDetails", controller.getRouteDetails);
+router.get("/routesDetails/:route_id", controller.getRouteDetailsByRouteId);
 router.post("/create_area/:name/:region_id", controller.createArea);
 router.post("/create_mine/:name/:area_id", controller.createMine);
 router.post("/create_vehicle/:name/:tag_id/:route_id/:area_id", controller.createVehicle);
