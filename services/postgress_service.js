@@ -1,3 +1,4 @@
+
 const {Client} = require("pg");
 const client = new Client({
     user: "mtqddqwuuphbvr",
@@ -70,20 +71,38 @@ exports.createMine = async (name, area_id) => {
     })
 };
 
-exports.createRfid = async (ip, name, frip, tpip, mid, aid) => {
+exports.createRfid = async (ip, name, frip, tpip, mid, aid, status) => {
     const query = `insert into rfids(
     rfid_ip_address,
     rfid_name,
     rfid_front_cam_ip_address,
     rfid_top_cam_ip_address,
     mine_id, 
-    area_id) values (` + "'" + ip + "'" + `,` + "'" + name + "'" + `,` + "'" + frip + "'" + `,` + "'" + tpip + "'" + `,` + "'" + mid + "'" + `,` + "'" + aid + "'" + `)`;
+    area_id,
+    status) values (` + "'" + ip + "'" + `,` + "'" + name + "'" + `,` + "'" + frip + "'" + `,` + "'" + tpip + "'" + `,` + "'" + mid + "'" + `,` + "'" + aid + "'" + `,` +  status + `)`;
     client.query(query).then((res) => {
         return res;
     }).catch((err) => {
         return err;
     })
 };
+exports.updateRfid = async (id, ipadd, name, frontip, topip, mine, area, status) => {
+    const query = `UPDATE rfids SET 
+        rfid_ip_address = `+ "'" + ipadd+ "'" +
+        `,rfid_name = ` + "'" + name+ "'" +
+        `,rfid_front_cam_ip_address =` + "'" + frontip+ "'" +
+        `,rfid_top_cam_ip_address =` + "'" + topip+ "'" +
+        `,area_id =` +  area +
+        `,mine_id =` +  mine +
+        `,status =` +  status +
+    ` WHERE rfid_id = ` +id ;
+    console.log(query);
+    client.query(query).then((res) => {
+        return res;
+    }).catch((err) => {
+        return err;
+    })
+}
 
 exports.getareas = async () => {
     const query = `select areas.area_id,areas.area_name,regions.region_id , regions.region_name from areas
@@ -137,7 +156,29 @@ exports.createVehicle = async (name, tag_id, area_id, route_id) => {
     }).catch((err) => {
         return err;
     })
+};
 
+exports.updateVehicle = async (id,name, tag_id, area_id, route_id) => {
+    const query = `UPDATE vehicles SET 
+        vehicle_no = `+ "'" + name+ "'" +
+        `,vehicle_tag_id = ` + "'" + tag_id+ "'" +
+        `,area_id =` +  area_id +
+        ` WHERE vehicle_id = ` +id ;
+    // const query = `insert into vehicles (vehicle_no,vehicle_tag_id,area_id) values (` + "'" + name + "'" + `,` + "'" + tag_id + "'" + `,` + area_id + `) Returning vehicle_id`;
+    console.log(query);
+    client.query(query).then(async (res) => {
+        const query2 = `UPDATE vehicle_route_config SET 
+        route_id = `+ route_id + ` WHERE vehicle_id = ` +id ;
+        // const query2 = `insert into vehicle_route_config (vehicle_id,route_id) values (` + res.rows[0].vehicle_id + `,` + route_id + `)`;
+        console.log(query2);
+        client.query(query2).then((res2) => {
+            return res2;
+        }).catch((err1) => {
+            return err1;
+        })
+    }).catch((err) => {
+        return err;
+    })
 };
 
 exports.getVehicles = async () => {
@@ -148,7 +189,9 @@ exports.getVehicles = async () => {
   vehicles.vehicle_no,
   vehicles.vehicle_tag_id, 
   routes.route_name,
-  areas.area_name
+  areas.area_name,
+  areas.area_id,
+  vehicle_route_config.vehicle_route_config_id
   from 
   vehicles 
   inner join areas on areas.area_id = vehicles.area_id
@@ -264,6 +307,7 @@ exports.getRfids = async () => {
   rfids.rfid_name,
   rfids.rfid_front_cam_ip_address,
   rfids.rfid_top_cam_ip_address,
+  rfids.status,
   mines.mine_id,
   mines.mine_name,
   areas.area_id,
@@ -356,9 +400,18 @@ exports.deleteMine = async (mine_id) => {
     return data;
 };
 
-exports.deleteRouteConfig = async (id) => {
+exports.deleteRouteConfigByRouteConfigId = async (id) => {
     try {
         const query = "delete from route_config where route_config_id =" + id;
+        return await client.query(query);
+    } catch (e) {
+        return e.stack;
+    }
+};
+
+exports.deleteRouteConfigByRouteId = async (id) => {
+    try {
+        const query = "delete from route_config where route_id =" + id;
         return await client.query(query);
     } catch (e) {
         return e.stack;
