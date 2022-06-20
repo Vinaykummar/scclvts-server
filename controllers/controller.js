@@ -1,3 +1,4 @@
+
 const postgress = require("../services/postgress_service");
 var format = require('pg-format');
 
@@ -118,6 +119,11 @@ exports.createVehicle = async (req, res, next) => {
     res.send(data);
 };
 
+exports.updateVehicle = async (req, res, next) => {
+    const data = await postgress.updateVehicle(req.params.id,req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id);
+    res.send(data);
+};
+
 exports.getVehicleByVehicleNo = async (req, res, next) => {
     console.log(req.params.vehicle_no);
     if (req.params.vehicle_no == undefined) {
@@ -179,37 +185,37 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                 switch (index) {
                     case 0:
                         console.log("trip start");
-        //                 console.log(route.rows[0]["route-config"][0].route_id)
-        //                 const route_id = route.rows[0]["route-config"][0].route_id;
-        //                 const trip = await postgress.createTrip(route.rows[0].vehicle_id, route_id);
-        //                 console.log(trip);
-        //                 let values = [];
-        //                 route_points.forEach((point) => {
-        //                     let temp = [];
-        //                     temp.push(trip.rows[0].trip_id);
-        //                     temp.push(route.rows[0].vehicle_id);
-        //                     temp.push(point.route_id);
-        //                     temp.push("false");
-        //                     temp.push("AUTO");
-        //                     temp.push(new Date().toLocaleString());
-        //                     temp.push(route.rows[0].vehicle_no);
-        //                     temp.push(point.route_name);
-        //                     temp.push(point.rfid_ip_address);
-        //                     temp.push(point.rfid_name);
-        //                     temp.push(true);
-        //                     values.push(temp);
-        //                 });
-        //                 console.log(values);
-        //                 values[0][3] = "true";
-        //                 values[0][4] = "AUTO";
-        //
-        //                 const tripDetailsQuery = `insert into trip_info
-        // (trip_id,vehicle_id,route_id,status,open_type,timestamp,vehicle_no,route_name,rfid_ip_address,rfid_name,trip_active)
-        // values %L Returning trip_info_id`;
-        //                 var sql = format(tripDetailsQuery, values);
-        //                 console.log(sql);
-        //                 const trip_info = await postgress.createTrip_Detail(sql);
-        //                 console.log(trip_info);
+                        //                 console.log(route.rows[0]["route-config"][0].route_id)
+                        //                 const route_id = route.rows[0]["route-config"][0].route_id;
+                        //                 const trip = await postgress.createTrip(route.rows[0].vehicle_id, route_id);
+                        //                 console.log(trip);
+                        //                 let values = [];
+                        //                 route_points.forEach((point) => {
+                        //                     let temp = [];
+                        //                     temp.push(trip.rows[0].trip_id);
+                        //                     temp.push(route.rows[0].vehicle_id);
+                        //                     temp.push(point.route_id);
+                        //                     temp.push("false");
+                        //                     temp.push("AUTO");
+                        //                     temp.push(new Date().toLocaleString());
+                        //                     temp.push(route.rows[0].vehicle_no);
+                        //                     temp.push(point.route_name);
+                        //                     temp.push(point.rfid_ip_address);
+                        //                     temp.push(point.rfid_name);
+                        //                     temp.push(true);
+                        //                     values.push(temp);
+                        //                 });
+                        //                 console.log(values);
+                        //                 values[0][3] = "true";
+                        //                 values[0][4] = "AUTO";
+                        //
+                        //                 const tripDetailsQuery = `insert into trip_info
+                        // (trip_id,vehicle_id,route_id,status,open_type,timestamp,vehicle_no,route_name,rfid_ip_address,rfid_name,trip_active)
+                        // values %L Returning trip_info_id`;
+                        //                 var sql = format(tripDetailsQuery, values);
+                        //                 console.log(sql);
+                        //                 const trip_info = await postgress.createTrip_Detail(sql);
+                        //                 console.log(trip_info);
                         res.send(true);
                         break;
 
@@ -240,7 +246,7 @@ exports.getRfids = async (req, res, next) => {
 };
 
 exports.createRfid = async (req, res, next) => {
-    const data = await postgress.createRfid(req.params.ipadd, req.params.name, req.params.frontip, req.params.topip, req.params.mine, req.params.area);
+    const data = await postgress.createRfid(req.params.ipadd, req.params.name, req.params.frontip, req.params.topip, req.params.mine, req.params.area, req.params.status);
     res.send(data);
 };
 
@@ -281,9 +287,18 @@ exports.deleteRoute = async (req, res, next) => {
     }
 };
 
-exports.deleteRouteConfig = async (req, res, next) => {
+exports.deleteRouteConfigByRouteConfigId = async (req, res, next) => {
     try {
-        const data = await postgress.deleteRouteConfig(req.params.id);
+        const data = await postgress.deleteRouteConfigByRouteConfigId(req.params.id);
+        res.send(data.rows);
+    } catch (e) {
+        res.send(e.stack);
+    }
+};
+
+exports.deleteRouteConfigByRouteId = async (req, res, next) => {
+    try {
+        const data = await postgress.deleteRouteConfigByRouteId(req.params.id);
         res.send(data.rows);
     } catch (e) {
         res.send(e.stack);
@@ -299,3 +314,13 @@ exports.deleteRfid = async (req, res, next) => {
     const data = await postgress.deleteRfid(req.params.id);
     res.send(data.rows);
 };
+
+exports.updateRfidPoint = async (req, res, next) => {
+    try {
+        const data = await postgress.updateRfid(req.params.id, req.params.ipadd, req.params.name, req.params.frontip, req.params.topip, req.params.mine, req.params.area, req.params.status);
+        res.send(data);
+    } catch (e) {
+        res.send(e.stack);
+    }
+
+}
