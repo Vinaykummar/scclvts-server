@@ -1,5 +1,5 @@
-
 const {Client} = require("pg");
+const format = require("pg-format");
 const client = new Client({
     user: "mtqddqwuuphbvr",
     password: "1631a6aa1b5f7bae708bd9965be0fe641578c1d2e4f013fac2e46e8c5885a583",
@@ -79,7 +79,7 @@ exports.createRfid = async (ip, name, frip, tpip, mid, aid, status) => {
     rfid_top_cam_ip_address,
     mine_id, 
     area_id,
-    status) values (` + "'" + ip + "'" + `,` + "'" + name + "'" + `,` + "'" + frip + "'" + `,` + "'" + tpip + "'" + `,` + "'" + mid + "'" + `,` + "'" + aid + "'" + `,` +  status + `)`;
+    status) values (` + "'" + ip + "'" + `,` + "'" + name + "'" + `,` + "'" + frip + "'" + `,` + "'" + tpip + "'" + `,` + "'" + mid + "'" + `,` + "'" + aid + "'" + `,` + status + `)`;
     client.query(query).then((res) => {
         return res;
     }).catch((err) => {
@@ -88,14 +88,7 @@ exports.createRfid = async (ip, name, frip, tpip, mid, aid, status) => {
 };
 exports.updateRfid = async (id, ipadd, name, frontip, topip, mine, area, status) => {
     const query = `UPDATE rfids SET 
-        rfid_ip_address = `+ "'" + ipadd+ "'" +
-        `,rfid_name = ` + "'" + name+ "'" +
-        `,rfid_front_cam_ip_address =` + "'" + frontip+ "'" +
-        `,rfid_top_cam_ip_address =` + "'" + topip+ "'" +
-        `,area_id =` +  area +
-        `,mine_id =` +  mine +
-        `,status =` +  status +
-    ` WHERE rfid_id = ` +id ;
+        rfid_ip_address = ` + "'" + ipadd + "'" + `,rfid_name = ` + "'" + name + "'" + `,rfid_front_cam_ip_address =` + "'" + frontip + "'" + `,rfid_top_cam_ip_address =` + "'" + topip + "'" + `,area_id =` + area + `,mine_id =` + mine + `,status =` + status + ` WHERE rfid_id = ` + id;
     console.log(query);
     client.query(query).then((res) => {
         return res;
@@ -158,17 +151,14 @@ exports.createVehicle = async (name, tag_id, area_id, route_id) => {
     })
 };
 
-exports.updateVehicle = async (id,name, tag_id, area_id, route_id) => {
+exports.updateVehicle = async (id, name, tag_id, area_id, route_id) => {
     const query = `UPDATE vehicles SET 
-        vehicle_no = `+ "'" + name+ "'" +
-        `,vehicle_tag_id = ` + "'" + tag_id+ "'" +
-        `,area_id =` +  area_id +
-        ` WHERE vehicle_id = ` +id ;
+        vehicle_no = ` + "'" + name + "'" + `,vehicle_tag_id = ` + "'" + tag_id + "'" + `,area_id =` + area_id + ` WHERE vehicle_id = ` + id;
     // const query = `insert into vehicles (vehicle_no,vehicle_tag_id,area_id) values (` + "'" + name + "'" + `,` + "'" + tag_id + "'" + `,` + area_id + `) Returning vehicle_id`;
     console.log(query);
     client.query(query).then(async (res) => {
         const query2 = `UPDATE vehicle_route_config SET 
-        route_id = `+ route_id + ` WHERE vehicle_id = ` +id ;
+        route_id = ` + route_id + ` WHERE vehicle_id = ` + id;
         // const query2 = `insert into vehicle_route_config (vehicle_id,route_id) values (` + res.rows[0].vehicle_id + `,` + route_id + `)`;
         console.log(query2);
         client.query(query2).then((res2) => {
@@ -235,10 +225,10 @@ exports.getVehicleRouteNameByVehicleNo = async (vehicle_no) => {
   INNER JOIN vehicle_route_config ON vehicle_route_config.vehicle_id = vehicles.vehicle_id
   INNER JOIN routes ON routes.route_id = vehicle_route_config.route_id
   where vehicles.vehicle_no =` + "'" + vehicle_no + "'" + ``;
-    console.log(query);
-    try{
+    // console.log(query);
+    try {
         return await client.query(query);
-    }catch (e) {
+    } catch (e) {
         console.error(e.stack);
         return e.stack;
     }
@@ -291,12 +281,12 @@ INNER JOIN areas ON areas.area_id = rfids.area_id
 INNER JOIN vehicle_route_config ON vehicle_route_config.route_id = routes.route_id
 INNER JOIN vehicles ON vehicles.vehicle_id = vehicle_route_config.vehicle_id
 where vehicles.vehicle_no = ` + "'" + vehicle_no + "'" + ` and rfids.rfid_ip_address = ` + "'" + rfid_ip + "'" + ``;
-try{
-    return await client.query(query);
-}catch (e) {
-    console.error(e.stack);
-    return e.stack;
-}
+    try {
+        return await client.query(query);
+    } catch (e) {
+        console.error(e.stack);
+        return e.stack;
+    }
 
 };
 
@@ -331,7 +321,7 @@ exports.getRoutes = async (area_id) => {
     return data;
 };
 
-exports.getRouteDetails = async (area_id) => {
+exports.getRouteDetails = async (id) => {
     const query = `
   SELECT 
   routes.route_id,
@@ -349,7 +339,7 @@ exports.getRouteDetails = async (area_id) => {
   INNER JOIN rfids ON rfids.rfid_id = route_config.rfid_id
   INNER JOIN mines ON mines.mine_id = rfids.mine_id
   INNER JOIN areas ON areas.area_id = rfids.area_id
-  `;
+ `;
     const data = await client.query(query);
     return data;
 };
@@ -371,8 +361,8 @@ INNER JOIN route_config ON route_config.route_id = routes.route_id
 INNER JOIN rfids ON rfids.rfid_id = route_config.rfid_id
 INNER JOIN mines ON mines.mine_id = rfids.mine_id
 INNER JOIN areas ON areas.area_id = rfids.area_id
-where route_config.route_id = ` + route_id + ``;
-    console.log(query);
+where route_config.route_id = ` + route_id + ` order by route_config.route_config_id`;
+    // console.log(query);
     const data = await client.query(query);
     return data;
 };
@@ -444,12 +434,79 @@ exports.deleteRfid = async (id) => {
 
 exports.createTrip = async (vno, route_id) => {
     const date = new Date();
-    const query = `insert into trips (vehicle_id,timestamp,route_id,trip_active) values (` + "'" + vno + "'" + `,` + "'" + date.toLocaleString() + "'" + `,` + "'" + route_id + "'" + ",true" + `) Returning trip_id`;
+    const query = `insert into trips (vehicle_id,timestamp,route_id,trip_active) values (` + "'" + vno + "'" + `,` + "'" + date.toISOString() + "'" + `,` + "'" + route_id + "'" + ",true" + `) Returning trip_id`;
     const data = await client.query(query);
     return data;
 };
 
-exports.createTrip_Detail = async (sql) => {
+exports.getTrips = async () => {
+    const query = `select
+trips.trip_id,
+trips.vehicle_id,
+trips.route_id,
+trips.trip_active,
+trips.timestamp,
+vehicles.vehicle_no,
+routes.route_name,
+routes.area_id
+from
+trips
+inner join vehicles on vehicles.vehicle_id = trips.vehicle_id
+inner join routes on routes.route_id = trips.route_id order by trips.timestamp desc`;
+    const data = await client.query(query);
+    return data;
+};
+
+exports.getTripDetailsByTripId = async (id) => {
+    const query = `select * from trip_info where trip_id =` +id+ `order by trip_info_id`;
+    const data = await client.query(query);
+    return data;
+};
+
+exports.getActiveTripByVehicle_id = async (vno) => {
+    const query = `select
+trips.trip_id,
+trips.vehicle_id,
+trips.route_id,
+trips.trip_active,
+trips.timestamp,
+vehicles.vehicle_no
+from
+trips
+inner join vehicles on vehicles.vehicle_id = trips.vehicle_id
+where vehicles.vehicle_no = ` + "'" + vno + "'" + ` and trips.trip_active=true`;
+    const data = await client.query(query);
+    // console.log(data);
+    return data;
+};
+
+exports.createTrip_Detail = async (values) => {
+    const tripDetailsQuery = `insert into trip_info
+                        (trip_id,vehicle_id,route_id,status,open_type,timestamp,vehicle_no,route_name,rfid_ip_address,rfid_name,trip_active)
+                        values %L Returning trip_info_id`;
+    var sql = format(tripDetailsQuery, values);
+    console.log(sql);
     const data = await client.query(sql);
     return data;
 };
+
+exports.updateTripDetail = async (id, type, timestamp, status) => {
+    const query = `UPDATE trip_info SET 
+        open_type = ` + "'" + type + "'" + `,timestamp = ` + "'" + timestamp + "'" + `,status =` + status + ` WHERE trip_info_id = ` + id;
+    // console.log(query);
+    client.query(query).then((res) => {
+        return res;
+    }).catch((err) => {
+        return err;
+    })
+}
+
+exports.updateTrip = async (id) => {
+    const query = `UPDATE trips SET 
+        trip_active = false  WHERE trip_id = ` + id;
+    client.query(query).then((res) => {
+        return res;
+    }).catch((err) => {
+        return err;
+    })
+}
