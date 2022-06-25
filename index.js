@@ -6,6 +6,7 @@ const {json} = require("express");
 var app = express();
 
 app.use(json());
+
 app.use(cors({
     origin: 'https://scclvts.web.app'
 }));
