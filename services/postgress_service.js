@@ -482,7 +482,7 @@ where vehicles.vehicle_no = ` + "'" + vno + "'" + ` and trips.trip_active=true`;
 
 exports.createTrip_Detail = async (values) => {
     const tripDetailsQuery = `insert into trip_info
-                        (trip_id,vehicle_id,route_id,status,open_type,timestamp,vehicle_no,route_name,rfid_ip_address,rfid_name,trip_active)
+                        (trip_id,vehicle_id,route_id,status,open_type,timestamp,vehicle_no,route_name,rfid_ip_address,rfid_name,trip_active,front_view,top_view)
                         values %L Returning trip_info_id`;
     var sql = format(tripDetailsQuery, values);
     console.log(sql);
@@ -490,9 +490,9 @@ exports.createTrip_Detail = async (values) => {
     return data;
 };
 
-exports.updateTripDetail = async (id, type, timestamp, status) => {
+exports.updateTripDetail = async (id, type, timestamp, status,front_view,top_view) => {
     const query = `UPDATE trip_info SET 
-        open_type = ` + "'" + type + "'" + `,timestamp = ` + "'" + timestamp + "'" + `,status =` + status + ` WHERE trip_info_id = ` + id;
+        open_type = ` + "'" + type + "'" + `,timestamp = ` + "'" + timestamp + "'" + `,front_view = ` + "'" + front_view + "'" + `,top_view = ` + "'" + top_view + "'" + `,status =` + status + ` WHERE trip_info_id = ` + id;
     // console.log(query);
     client.query(query).then((res) => {
         return res;
