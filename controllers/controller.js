@@ -216,7 +216,6 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                 temp.push(true);
                                 temp.push(req.params.front_view);
                                 temp.push(req.params.top_view);
-                                temp.push(true);
                                 values.push(temp);
                             });
                             // console.log(values);
