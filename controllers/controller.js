@@ -27,7 +27,7 @@ exports.createRegion = async (req, res, next) => {
 exports.getAreas = async (req, res, next) => {
     console.log(req.query);
     if (req.query.region_id == undefined) {
-        const data = await postgress.getareas();
+        const data = await postgress.getareas(req.params.user_id);
         res.send(data.rows);
     } else {
         if (req.query.area_id == undefined) {
@@ -242,14 +242,14 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                             if (previousPoint.open_type === "AUTO" || previousPoint.open_type === "MANUAL") {
                                 if (req.params.open_type === "AUTO") {
                                     const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
-                                    const data2 = await postgress.updateTrip(activeTrip[0].trip_id)
+                                    const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toISOString())
                                     res.send(true);
                                 }
                             }
                         } else {
                             if (req.params.open_type === "MANUAL") {
                                 const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "MANUAL", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
-                                const data2 = await postgress.updateTrip(activeTrip[0].trip_id)
+                                const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toISOString())
                                 res.send(true);
                             } else {
                                 res.send(false);

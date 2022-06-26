@@ -4,7 +4,7 @@ const controller = require("../controllers/controller");
 
 router.post("/create_region/:name", controller.createRegion);
 router.get("/regions", controller.getRegions);
-router.get("/areas", controller.getAreas);
+router.get("/areas/:user_id", controller.getAreas);
 router.get("/routes", controller.getRoutes);
 router.get("/routesDetails", controller.getRouteDetails);
 router.get("/routesDetails/:id", controller.getRouteDetailsByRouteId);

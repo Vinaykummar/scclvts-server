@@ -97,9 +97,9 @@ exports.updateRfid = async (id, ipadd, name, frontip, topip, mine, area, status)
     })
 }
 
-exports.getareas = async () => {
-    const query = `select areas.area_id,areas.area_name,regions.region_id , regions.region_name from areas
-  inner join regions on areas.region_id = regions.region_id;`;
+exports.getareas = async (user_id) => {
+    const query = `select areas.area_id,areas.area_name,regions.region_id,areas.user_id,regions.region_name from areas
+  inner join regions on areas.region_id = regions.region_id where areas.user_id =` + "'" + user_id + "'" + ``;
     const data = await client.query(query);
     return data;
 };
@@ -446,6 +446,7 @@ trips.vehicle_id,
 trips.route_id,
 trips.trip_active,
 trips.timestamp,
+trips.end_timestamp,
 vehicles.vehicle_no,
 routes.route_name,
 routes.area_id
@@ -501,9 +502,9 @@ exports.updateTripDetail = async (id, type, timestamp, status,front_view,top_vie
     })
 }
 
-exports.updateTrip = async (id) => {
+exports.updateTrip = async (id,time) => {
     const query = `UPDATE trips SET 
-        trip_active = false  WHERE trip_id = ` + id;
+        trip_active = false, end_timestamp = `+"'" + time + "'" + `  WHERE trip_id = ` + id;
     client.query(query).then((res) => {
         return res;
     }).catch((err) => {
