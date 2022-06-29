@@ -12,7 +12,7 @@ app.use(cors({
 }));
 app.use(router);
 
-app.listen(process.env.PORT, () => {
+app.listen(8080, () => {
     console.log("Server listsening at port " + process.env.PORT);
     postgress.connect();
 });

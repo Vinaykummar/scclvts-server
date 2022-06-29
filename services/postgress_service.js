@@ -44,17 +44,17 @@ exports.createArea = async (name, region_id) => {
     })
 };
 
-exports.createRoute = async (name, area_id) => {
+exports.createRoute = async (name, area_id, mine_id) => {
     try {
-        const query = `insert into routes(route_name, area_id) values (` + "'" + name + "'" + `,` + "'" + area_id + "'" + `) Returning route_id`;
+        const query = `insert into routes(route_name, area_id, mine_id) values (` + "'" + name + "'" + `,` + "'" + area_id + "'" + `,` + "'" + mine_id + "'" + `) Returning route_id`;
         return await client.query(query);
     } catch (e) {
         return e.stack;
     }
 };
 
-exports.createRouteConfig = async (rid, rfid) => {
-    const query = `insert into route_config(route_id, rfid_id) values (` + "'" + rid + "'" + `,` + "'" + rfid + "'" + `)`;
+exports.createRouteConfig = async (rid, rfid, optional) => {
+    const query = `insert into route_config(route_id, rfid_id, optional) values (` + "'" + rid + "'" + `,` + "'" + rfid + "'" + `,` + optional  + `)`;
     client.query(query).then((res) => {
         return res;
     }).catch((err) => {
@@ -97,9 +97,16 @@ exports.updateRfid = async (id, ipadd, name, frontip, topip, mine, area, status)
     })
 }
 
-exports.getareas = async (user_id) => {
-    const query = `select areas.area_id,areas.area_name,regions.region_id,areas.user_id,regions.region_name from areas
-  inner join regions on areas.region_id = regions.region_id where areas.user_id =` + "'" + user_id + "'" + ``;
+exports.getareas = async (user_name) => {
+    const query = `
+select 
+areas.area_name,
+areas.area_id 
+from 
+user_config
+inner join users on users.user_id = user_config.user_id
+inner join areas on areas.area_id = user_config.area_id
+where users.username =` + "'" + user_name + "'" + ``;
     const data = await client.query(query);
     return data;
 };
@@ -316,6 +323,7 @@ exports.getRoutes = async (area_id) => {
   FROM 
   routes
   inner join areas on areas.area_id = routes.area_id
+  inner join mines on mines.mine_id = routes.mine_id
   `;
     const data = await client.query(query);
     return data;
@@ -332,7 +340,8 @@ exports.getRouteDetails = async (id) => {
   rfids.rfid_top_cam_ip_address,
   mines.mine_name,
   areas.area_name,
-  route_config.route_config_id
+  route_config.route_config_id,
+  route_config.optional
   FROM 
   routes 
   INNER JOIN route_config ON route_config.route_id = routes.route_id 
@@ -354,7 +363,8 @@ rfids.rfid_name,
 rfids.rfid_front_cam_ip_address,
 rfids.rfid_top_cam_ip_address,
 mines.mine_name,
-areas.area_name
+areas.area_name,
+route_config.optional
 FROM 
 routes 
 INNER JOIN route_config ON route_config.route_id = routes.route_id 
@@ -483,7 +493,7 @@ where vehicles.vehicle_no = ` + "'" + vno + "'" + ` and trips.trip_active=true`;
 
 exports.createTrip_Detail = async (values) => {
     const tripDetailsQuery = `insert into trip_info
-                        (trip_id,vehicle_id,route_id,status,open_type,timestamp,vehicle_no,route_name,rfid_ip_address,rfid_name,trip_active,front_view,top_view)
+                        (trip_id,vehicle_id,route_id,status,open_type,timestamp,vehicle_no,route_name,rfid_ip_address,rfid_name,trip_active,front_view,top_view,optional)
                         values %L Returning trip_info_id`;
     var sql = format(tripDetailsQuery, values);
     console.log(sql);
