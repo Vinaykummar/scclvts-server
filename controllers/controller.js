@@ -114,7 +114,7 @@ exports.getRouteDetailsByRouteId = async (req, res, next) => {
 exports.createVehicle = async (req, res, next) => {
     console.log(req.params.name);
     console.log(req);
-    const data = await postgress.createVehicle(req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id);
+    const data = await postgress.createVehicle(req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id, req.params.mine_id);
     res.send(data);
 };
 

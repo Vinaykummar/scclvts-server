@@ -10,7 +10,7 @@ router.get("/routesDetails", controller.getRouteDetails);
 router.get("/routesDetails/:id", controller.getRouteDetailsByRouteId);
 router.post("/create_area/:name/:region_id", controller.createArea);
 router.post("/create_mine/:name/:area_id", controller.createMine);
-router.post("/create_vehicle/:name/:tag_id/:route_id/:area_id", controller.createVehicle);
+router.post("/create_vehicle/:name/:tag_id/:route_id/:area_id/:mine_id", controller.createVehicle);
 router.get("/mines", controller.getMines);
 router.get("/vehicles", controller.getVehicles);
 router.get("/vehicle/:vehicle_no", controller.getVehicleByVehicleNo);

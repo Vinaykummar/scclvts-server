@@ -142,8 +142,8 @@ exports.getMinesByMineIdAndAreaId = async (mine_id, area_id) => {
     return data;
 };
 
-exports.createVehicle = async (name, tag_id, area_id, route_id) => {
-    const query = `insert into vehicles (vehicle_no,vehicle_tag_id,area_id) values (` + "'" + name + "'" + `,` + "'" + tag_id + "'" + `,` + area_id + `) Returning vehicle_id`;
+exports.createVehicle = async (name, tag_id, area_id, route_id, mine_id) => {
+    const query = `insert into vehicles (vehicle_no,vehicle_tag_id,area_id,mine_id) values (` + "'" + name + "'" + `,` + "'" + tag_id + "'" + `,` + area_id + `,` + mine_id + `) Returning vehicle_id`;
     console.log(query);
     client.query(query).then(async (res) => {
         const query2 = `insert into vehicle_route_config (vehicle_id,route_id) values (` + res.rows[0].vehicle_id + `,` + route_id + `)`;
@@ -188,11 +188,14 @@ exports.getVehicles = async () => {
   routes.route_name,
   areas.area_name,
   areas.area_id,
+  mines.mine_id,
+  mines.mine_name,
   vehicle_route_config.vehicle_route_config_id
   from 
   vehicles 
   inner join areas on areas.area_id = vehicles.area_id
   INNER JOIN vehicle_route_config ON vehicle_route_config.vehicle_id = vehicles.vehicle_id
+  INNER JOIN mines ON mines.mine_id = vehicles.mine_id
   INNER JOIN routes ON routes.route_id = vehicle_route_config.route_id`;
     const data = await client.query(query);
     return data;
