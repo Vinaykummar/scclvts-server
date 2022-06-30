@@ -264,7 +264,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                         console.log("############################################################");
                         console.log(currentTrip);
                         console.log(currentIndex, currentPoint, previousPoint);
-                        if (previousPoint.status == true) {
+                        if (previousPoint.status == true && currentPoint.status == false) {
                             if (previousPoint.open_type === "AUTO" || previousPoint.open_type === "MANUAL") {
                                 if (req.params.open_type === "AUTO") {
                                     const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
@@ -296,7 +296,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                         console.log(currentIndex, currentPoint, previousPoint);
 
 
-                        if (previousPoint.status == true) {
+                        if (previousPoint.status == true && currentPoint.status == false) {
                             if (previousPoint.open_type === "AUTO" || previousPoint.open_type === "MANUAL") {
                                 if (req.params.open_type === "AUTO") {
                                     const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
