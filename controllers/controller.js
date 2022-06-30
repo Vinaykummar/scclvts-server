@@ -321,11 +321,11 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
             }
         } catch (e2) {
             console.error(e2.stack);
-            res.send(false);
+            res.send(true);
         }
     } catch (e) {
         console.error(false);
-        res.send(false);
+        res.send(true);
     }
 
 };
