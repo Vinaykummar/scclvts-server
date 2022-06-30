@@ -299,7 +299,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                         if (previousPoint.status == true && currentPoint.status == false) {
                             if (previousPoint.open_type === "AUTO" || previousPoint.open_type === "MANUAL") {
                                 if (req.params.open_type === "AUTO") {
-                                    const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
+                                     const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
                                     res.send(true);
                                 }
                             }
@@ -320,13 +320,12 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                 }
             }
         } catch (e2) {
-
             console.error(e2.stack);
-            res.send(true);
+            res.send(false);
         }
     } catch (e) {
         console.error(false);
-        res.send(true);
+        res.send(false);
     }
 
 };
