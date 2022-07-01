@@ -10,8 +10,9 @@ router.get("/routesDetails", controller.getRouteDetails);
 router.get("/routesDetails/:id", controller.getRouteDetailsByRouteId);
 router.post("/create_area/:name/:region_id", controller.createArea);
 router.post("/create_mine/:name/:area_id", controller.createMine);
-router.post("/create_vehicle/:name/:tag_id/:route_id/:area_id/:mine_id", controller.createVehicle);
+router.post("/create_vehicle/:name/:tag_id/:route_id/:area_id/:mine_id/:vehicle_type", controller.createVehicle);
 router.get("/mines", controller.getMines);
+
 router.get("/vehicles", controller.getVehicles);
 router.get("/vehicle/:vehicle_no", controller.getVehicleByVehicleNo);
 router.get("/vehicle/route/:vehicle_no", controller.getVehicleRouteByVehicleNo);
@@ -34,5 +35,9 @@ router.post("/delete/route_config/:id", controller.deleteRouteConfigByRouteConfi
 router.post("/delete/route/route_config/:id", controller.deleteRouteConfigByRouteId);
 router.post("/updaterfid/:id/:ipadd/:name/:frontip/:topip/:mine/:area/:status", controller.updateRfidPoint);
 router.post("/update_vehicle/:id/:name/:tag_id/:route_id/:area_id", controller.updateVehicle);
+
+router.get("/minesByType/:id", controller.getMinesbyType);
+router.get("/routesByType/:id", controller.getrou);
+// router.get("/vehiclesByType/:id", controller.getMinesByType);
 
 module.exports = router;

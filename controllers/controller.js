@@ -78,6 +78,23 @@ exports.getMines = async (req, res, next) => {
     }
 };
 
+
+exports.getMinesbyType = async (req, res, next) => {
+    console.log(req.query);
+    if (req.query.area_id == undefined) {
+        const data = await postgress.getMinesByType(req.params.id);
+        res.send(data.rows);
+    } else {
+        if (req.query.mine_id == undefined) {
+            const data = await postgress.getMinesByAreaId(req.query.area_id);
+            res.send(data.rows);
+        } else {
+            const data = await postgress.getMinesByMineIdAndAreaId(req.query.mine_id, req.query.area_id);
+            res.send(data.rows);
+        }
+    }
+};
+
 exports.getVehicles = async (req, res, next) => {
     console.log(req.params);
     if (req.query.area_id == undefined) {
@@ -99,6 +116,13 @@ exports.getRoutes = async (req, res, next) => {
     const data = await postgress.getRoutes();
     res.send(data.rows);
 };
+
+exports.getRoutesByType = async (req, res, next) => {
+    console.log(req.params);
+    const data = await postgress.getRoutesByType(req.params.id);
+    res.send(data.rows);
+};
+
 exports.getRouteDetails = async (req, res, next) => {
     console.log(req.params);
     const data = await postgress.getRouteDetails(req.params.id);
@@ -114,7 +138,7 @@ exports.getRouteDetailsByRouteId = async (req, res, next) => {
 exports.createVehicle = async (req, res, next) => {
     console.log(req.params.name);
     console.log(req);
-    const data = await postgress.createVehicle(req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id, req.params.mine_id);
+    const data = await postgress.createVehicle(req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id, req.params.mine_id, req.params.vehicle_type_id);
     res.send(data);
 };
 
@@ -311,8 +335,6 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                 if (req.params.open_type === "MANUAL") {
                                     const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "MANUAL", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
                                     res.send(true);
-                                } else {
-                                    res.send(false);
                                 }
                             }
                         }
@@ -321,11 +343,11 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
             }
         } catch (e2) {
             console.error(e2.stack);
-            res.send(true);
+            res.send(false);
         }
     } catch (e) {
         console.error(false);
-        res.send(true);
+        res.send(false);
     }
 
 };
