@@ -53,13 +53,22 @@ exports.createRoute = async (name, area_id, mine_id) => {
     }
 };
 
-exports.createRouteConfig = async (rid, rfid, optional) => {
-    const query = `insert into route_config(route_id, rfid_id, optional) values (` + "'" + rid + "'" + `,` + "'" + rfid + "'" + `,` + optional  + `)`;
-    client.query(query).then((res) => {
+exports.createRouteConfig = async (body) => {
+   const query = `insert into route_config(route_id, rfid_id, optional) values %L`;
+
+    var sql =   format(query,body);
+    console.log(sql);
+    client.query(sql).then((res) => {
         return res;
     }).catch((err) => {
         return err;
     })
+    // const query = `insert into route_config(route_id, rfid_id, optional) values (` + "'" + rid + "'" + `,` + "'" + rfid + "'" + `,` + optional  + `)`;
+    // client.query(query).then((res) => {
+    //     return res;
+    // }).catch((err) => {
+    //     return err;
+    // })
 };
 
 exports.createMine = async (name, area_id) => {
@@ -188,7 +197,8 @@ exports.updateVehicle = async (id, name, tag_id, area_id, route_id, mine_id, veh
 };
 
 exports.updateVehicleStatus = async (vehicle_id,status) => {
-    const query = `update vehicles set status = ` + status +`where vehicle_id =` + vehicle_id;
+    const query = `update vehicles set status = `+ status +` where vehicle_id =` + vehicle_id;
+    console.log(query);
     const data = await client.query(query);
     return data;
 }
@@ -251,16 +261,19 @@ exports.getVehicleByVehicleNo = async (vehicle_no) => {
 
 exports.getVehicleRouteNameByVehicleNo = async (vehicle_no) => {
     const query = `
-  select 
+select 
   vehicles.vehicle_id,
   vehicles.vehicle_no,
   vehicles.status,
+  vehicles.vehicle_type_id,
+  vehicle_type.vehicle_type_name,
   routes.route_name
   from
   vehicles
   INNER JOIN vehicle_route_config ON vehicle_route_config.vehicle_id = vehicles.vehicle_id
   INNER JOIN routes ON routes.route_id = vehicle_route_config.route_id
-  where vehicles.vehicle_no =` + "'" + vehicle_no + "'" + ``;
+  INNER JOIN vehicle_type ON vehicle_type.vehicle_type_id = vehicles.vehicle_type_id
+  where vehicles.vehicle_no = ` + "'" + vehicle_no + "'" + ``;
     // console.log(query);
     try {
         return await client.query(query);
