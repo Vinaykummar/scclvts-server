@@ -132,8 +132,8 @@ exports.getMines = async () => {
 
 exports.getMinesByType = async (typeId) => {
     const query = `select mines.mine_id,mines.mine_name,areas.area_id,areas.area_name from mines
-  inner join areas on areas.area_id = mines.area_id;
-  inner join mine_type on mine_type.mine_type_id = mines.mine_type_id where mine_type_id = `+typeId;
+  inner join areas on areas.area_id = mines.area_id
+  inner join mine_type on mine_type.mine_type_id = mines.mine_type_id where mine_type.mine_type_id = `+typeId;
     const data = await client.query(query);
     return data;
 };
@@ -151,8 +151,8 @@ exports.getMinesByMineIdAndAreaId = async (mine_id, area_id) => {
     return data;
 };
 
-exports.createVehicle = async (name, tag_id, area_id, route_id, mine_id, vehicle_type) => {
-    const query = `insert into vehicles (vehicle_no,vehicle_tag_id,area_id,mine_id,vehicle_type_id) values (` + "'" + name + "'" + `,` + "'" + tag_id + "'" + `,` + area_id + `,` + mine_id +`,` + vehicle_type + `) Returning vehicle_id`;
+exports.createVehicle = async (name, tag_id, area_id, route_id, mine_id, vehicle_type,status) => {
+    const query = `insert into vehicles (vehicle_no,vehicle_tag_id,area_id,mine_id,vehicle_type_id,status) values (` + "'" + name + "'" + `,` + "'" + tag_id + "'" + `,` + area_id + `,` + mine_id +`,` + vehicle_type +`,` + status + `) Returning vehicle_id`;
     console.log(query);
     client.query(query).then(async (res) => {
         const query2 = `insert into vehicle_route_config (vehicle_id,route_id) values (` + res.rows[0].vehicle_id + `,` + route_id + `)`;
@@ -167,9 +167,9 @@ exports.createVehicle = async (name, tag_id, area_id, route_id, mine_id, vehicle
     })
 };
 
-exports.updateVehicle = async (id, name, tag_id, area_id, route_id) => {
+exports.updateVehicle = async (id, name, tag_id, area_id, route_id, mine_id, vehicle_type,status) => {
     const query = `UPDATE vehicles SET 
-        vehicle_no = ` + "'" + name + "'" + `,vehicle_tag_id = ` + "'" + tag_id + "'" + `,area_id =` + area_id + ` WHERE vehicle_id = ` + id;
+        vehicle_no = ` + "'" + name + "'" + `,vehicle_tag_id = ` + "'" + tag_id + "'" + `,area_id =` + area_id + `,mine_id =` + mine_id +`,vehicle_type_id =` + vehicle_type + `,status =` + status +  ` WHERE vehicle_id = ` + id;
     // const query = `insert into vehicles (vehicle_no,vehicle_tag_id,area_id) values (` + "'" + name + "'" + `,` + "'" + tag_id + "'" + `,` + area_id + `) Returning vehicle_id`;
     console.log(query);
     client.query(query).then(async (res) => {
@@ -186,6 +186,22 @@ exports.updateVehicle = async (id, name, tag_id, area_id, route_id) => {
         return err;
     })
 };
+
+exports.updateVehicleStatus = async (vehicle_id,status) => {
+    const query = `update vehicles set status = ` + status +`where vehicle_id =` + vehicle_id;
+    const data = await client.query(query);
+    return data;
+}
+
+exports.createManualVehicle = async (vno,fv,tv,timestamp,ip) => {
+    const query = `insert into manual_vehicles (vehicle_no,front_view,top_view,timestamp,rfid_ip_address) values (` + "'" + vno + "'" + `,` + "'" + fv + "'" + `,` + "'" + tv + "'" + `,` + "'" + timestamp + "'" +`,` + "'" + ip + "'" + `)`;
+    //const query = `insert into manual_vehicles (vehicle_no,front_view,top_view,timestamp,rfid_ip_address)
+    //values ("'" +vno+  "'" + "," + "'" +front_view+  "'" + "," + "'" +top_view+  "'" + "," + "'" + timestamp+  "'" + "," + "'" +rfid_ip_address+  "'" + ``)`;
+    console.log(query);
+    const data = await client.query(query);
+    return data;
+}
+
 
 exports.getVehicles = async () => {
     const query = `
@@ -238,6 +254,7 @@ exports.getVehicleRouteNameByVehicleNo = async (vehicle_no) => {
   select 
   vehicles.vehicle_id,
   vehicles.vehicle_no,
+  vehicles.status,
   routes.route_name
   from
   vehicles
@@ -350,7 +367,7 @@ exports.getRoutesByType = async (route_typ) => {
   inner join areas on areas.area_id = routes.area_id
   inner join mines on mines.mine_id = routes.mine_id
   inner join route_type on route_type.route_type_id = routes.route_type_id
-  where routes.route_type_id =` + route_typ;
+  where route_type.route_type_id =` + route_typ;
     const data = await client.query(query);
     return data;
 };
