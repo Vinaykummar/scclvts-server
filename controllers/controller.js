@@ -78,6 +78,23 @@ exports.getMines = async (req, res, next) => {
     }
 };
 
+
+exports.getMinesbyType = async (req, res, next) => {
+    console.log(req.query);
+    if (req.query.area_id == undefined) {
+        const data = await postgress.getMinesByType(req.params.id);
+        res.send(data.rows);
+    } else {
+        if (req.query.mine_id == undefined) {
+            const data = await postgress.getMinesByAreaId(req.query.area_id);
+            res.send(data.rows);
+        } else {
+            const data = await postgress.getMinesByMineIdAndAreaId(req.query.mine_id, req.query.area_id);
+            res.send(data.rows);
+        }
+    }
+};
+
 exports.getVehicles = async (req, res, next) => {
     console.log(req.params);
     if (req.query.area_id == undefined) {
@@ -99,6 +116,13 @@ exports.getRoutes = async (req, res, next) => {
     const data = await postgress.getRoutes();
     res.send(data.rows);
 };
+
+exports.getRoutesByType = async (req, res, next) => {
+    console.log(req.params);
+    const data = await postgress.getRoutesByType(req.params.id);
+    res.send(data.rows);
+};
+
 exports.getRouteDetails = async (req, res, next) => {
     console.log(req.params);
     const data = await postgress.getRouteDetails(req.params.id);
@@ -113,9 +137,25 @@ exports.getRouteDetailsByRouteId = async (req, res, next) => {
 
 exports.createVehicle = async (req, res, next) => {
     console.log(req.params.name);
-    console.log(req);
-    const data = await postgress.createVehicle(req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id, req.params.mine_id);
-    res.send(data);
+    const vehicle = await postgress.getVehicleByVehicleNo(req.params.name);
+    // console.log(vehicle);
+    if(vehicle.rows.length > 0) {
+        const data = await  postgress.updateVehicle(
+            vehicle.rows[0].vehicle_id,
+            req.params.name,
+            req.params.tag_id,
+            req.params.area_id,
+            req.params.route_id,
+            req.params.mine_id,
+            req.params.vehicle_type,
+            req.params.status
+            );
+        res.send("true");
+    } else {
+        const data = await postgress.createVehicle(req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id, req.params.mine_id, req.params.vehicle_type, req.params.status);
+        res.send("true");
+    }
+
 };
 
 exports.updateVehicle = async (req, res, next) => {
@@ -174,6 +214,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
     let data;
     try {
         route = await postgress.getVehicleRouteNameByVehicleNo(req.params.vehicle_no);
+        // console.log(route);
         try {
             data = await postgress.getVehicleRouteRfidPoint(req.params.vehicle_no, req.params.rfid_ip);
             route.rows[0]["route-config"] = data.rows;
@@ -188,7 +229,11 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                 let currentIndex;
                 let currentPoint;
                 let previousPoint;
+
+
+
                 if (activeTrip.length > 0) {
+                    console.log("Inside active trip true");
                     currentTrip = await (await postgress.getTripDetailsByTripId(activeTrip[0].trip_id)).rows;
                     var multipleIps = currentTrip.filter((point) =>  point.rfid_ip_address === req.params.rfid_ip);
                     // console.log("multipleIps length", multipleIps.length );
@@ -218,114 +263,174 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                         previousPoint = currentTrip[currentIndex - 1];
                     }
 
-                }
-
-                switch (index) {
-                    case 0:
-                        // console.log("trip start");
-                        // console.log(route.rows[0]["route-config"][0].route_id)
-                        const route_id = route.rows[0]["route-config"][0].route_id;
-                        if (activeTrip.length == 0) {
-                            const trip = await postgress.createTrip(route.rows[0].vehicle_id, route_id);
-                            let values = [];
-                            route_points.forEach((point) => {
-                                let temp = [];
-                                temp.push(trip.rows[0].trip_id);
-                                temp.push(route.rows[0].vehicle_id);
-                                temp.push(point.route_id);
-                                temp.push("false");
-                                temp.push("NULL");
-                                temp.push(new Date().toISOString());
-                                temp.push(route.rows[0].vehicle_no);
-                                temp.push(point.route_name);
-                                temp.push(point.rfid_ip_address);
-                                temp.push(point.rfid_name);
-                                temp.push(true);
-                                temp.push(req.body.front_view);
-                                temp.push(req.body.top_view);
-                                temp.push(point.optional);
-                                values.push(temp);
-                            });
-                            // console.log(values);
-                            values[0][3] = "true";
-                            values[0][4] = "AUTO";
-                            const trip_info = await postgress.createTrip_Detail(values);
-                            // console.log(trip_info);
-                            res.send(true);
-                            break;
-                        } else {
-                            res.send(false);
-                            break;
-                        }
+                    switch (index) {
+                        case 0:
+                            // console.log("trip start");
+                            // console.log(route.rows[0]["route-config"][0].route_id)
+                            const route_id = route.rows[0]["route-config"][0].route_id;
+                            if (activeTrip.length == 0) {
+                                const trip = await postgress.createTrip(route.rows[0].vehicle_id, route_id);
+                                let values = [];
+                                route_points.forEach((point) => {
+                                    let temp = [];
+                                    temp.push(trip.rows[0].trip_id);
+                                    temp.push(route.rows[0].vehicle_id);
+                                    temp.push(point.route_id);
+                                    temp.push("false");
+                                    temp.push("NULL");
+                                    temp.push(new Date().toISOString());
+                                    temp.push(route.rows[0].vehicle_no);
+                                    temp.push(point.route_name);
+                                    temp.push(point.rfid_ip_address);
+                                    temp.push(point.rfid_name);
+                                    temp.push(true);
+                                    temp.push(req.body.front_view);
+                                    temp.push(req.body.top_view);
+                                    temp.push(point.optional);
+                                    values.push(temp);
+                                });
+                                // console.log(values);
+                                values[0][3] = "true";
+                                values[0][4] = "AUTO";
+                                const trip_info = await postgress.createTrip_Detail(values);
+                                // console.log(trip_info);
+                                res.send(true);
+                                break;
+                            } else {
+                                res.send(false);
+                                break;
+                            }
 
 
-                    case route_points.length - 1 :
-                        console.log("trip end");
-                        console.log("############################################################");
-                        console.log(currentTrip);
-                        console.log(currentIndex, currentPoint, previousPoint);
-                        if (previousPoint.status == true && currentPoint.status == false) {
-                            if (previousPoint.open_type === "AUTO" || previousPoint.open_type === "MANUAL") {
-                                if (req.params.open_type === "AUTO") {
+                        case route_points.length - 1 :
+                            console.log("trip end");
+                            console.log("############################################################");
+                            console.log(currentTrip);
+                            console.log(currentIndex, currentPoint, previousPoint);
+                            if (previousPoint.status == true && currentPoint.status == false) {
+                                if (previousPoint.open_type === "AUTO" || previousPoint.open_type === "MANUAL") {
+                                    if (req.params.open_type === "AUTO") {
+                                        const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
+                                        const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toISOString())
+                                        res.send(true);
+                                    }
+                                }
+                            } else {
+                                if(previousPoint.optional == true) {
                                     const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
                                     const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toISOString())
                                     res.send(true);
+                                } else {
+                                    if (req.params.open_type === "MANUAL") {
+                                        const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "MANUAL", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
+                                        const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toISOString())
+                                        res.send(true);
+                                    } else {
+                                        res.send(false);
+                                    }
                                 }
                             }
-                        } else {
-                            if(previousPoint.optional == true) {
-                                const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
-                                const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toISOString())
-                                res.send(true);
+                            break;
+
+                        default:
+                            console.log("********************************************************************");
+                            // console.log(currentTrip);
+
+                            // console.log(currentIndex, currentPoint, previousPoint);
+
+
+                            if (previousPoint.status == true && currentPoint.status == false) {
+                                if (previousPoint.open_type === "AUTO" || previousPoint.open_type === "MANUAL") {
+                                    if (req.params.open_type === "AUTO") {
+                                        const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
+                                        res.send(true);
+                                    }
+                                }
                             } else {
-                                if (req.params.open_type === "MANUAL") {
-                                    const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "MANUAL", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
-                                    const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toISOString())
+                                if(previousPoint.optional == true) {
+                                    const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
                                     res.send(true);
                                 } else {
-                                    res.send(false);
+                                    if (req.params.open_type === "MANUAL") {
+                                        const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "MANUAL", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
+                                        res.send(true);
+                                    } else {
+                                        res.send(false);
+                                    }
                                 }
                             }
-                        }
-                        break;
+                            break;
+                    }
 
-                    default:
-                        console.log("********************************************************************");
-                        console.log(currentTrip);
-
-                        console.log(currentIndex, currentPoint, previousPoint);
-
-
-                        if (previousPoint.status == true && currentPoint.status == false) {
-                            if (previousPoint.open_type === "AUTO" || previousPoint.open_type === "MANUAL") {
-                                if (req.params.open_type === "AUTO") {
-                                     const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
-                                    res.send(true);
-                                }
-                            }
-                        } else {
-                            if(previousPoint.optional == true) {
-                                const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
-                                res.send(true);
-                            } else {
-                                if (req.params.open_type === "MANUAL") {
-                                    const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "MANUAL", new Date().toISOString(), true,req.body.front_view,req.body.top_view)
-                                    res.send(true);
-                                } else {
-                                    res.send(false);
-                                }
-                            }
-                        }
-                        break;
                 }
+                else {
+                    if (req.params.open_type === "MANUAL") {
+                        const data = await postgress.createManualVehicle(rreq.params.vehicle_no,req.body.front_view,req.body.top_view, new Date().toISOString(),req.params.rfid_ip );
+                        res.send(true);
+                    } else {
+                        switch (index) {
+                            case 0:
+                                // console.log("trip start");
+                                // console.log(route.rows[0]["route-config"][0].route_id)
+                                const route_id = route.rows[0]["route-config"][0].route_id;
+                                if (activeTrip.length == 0) {
+                                    const trip = await postgress.createTrip(route.rows[0].vehicle_id, route_id);
+                                    let values = [];
+                                    route_points.forEach((point) => {
+                                        let temp = [];
+                                        temp.push(trip.rows[0].trip_id);
+                                        temp.push(route.rows[0].vehicle_id);
+                                        temp.push(point.route_id);
+                                        temp.push("false");
+                                        temp.push("NULL");
+                                        temp.push(new Date().toISOString());
+                                        temp.push(route.rows[0].vehicle_no);
+                                        temp.push(point.route_name);
+                                        temp.push(point.rfid_ip_address);
+                                        temp.push(point.rfid_name);
+                                        temp.push(true);
+                                        temp.push(req.body.front_view);
+                                        temp.push(req.body.top_view);
+                                        temp.push(point.optional);
+                                        values.push(temp);
+                                    });
+                                    // console.log(values);
+                                    values[0][3] = "true";
+                                    values[0][4] = "AUTO";
+                                    const trip_info = await postgress.createTrip_Detail(values);
+                                    // console.log(trip_info);
+                                    res.send(true);
+                                    break;
+                                } else {
+                                    res.send(false);
+                                    break;
+                                }
+                            default: res.send(false); break;
+                        }
+
+
+                    }
+
+                    console.log("Inside active trip false");
+                }
+
+
             }
         } catch (e2) {
-            console.error(e2.stack);
-            res.send(true);
+            // console.error(e2.stack);
+            if (req.params.open_type === "MANUAL") {
+                const data = await postgress.createManualVehicle(req.params.vehicle_no,req.body.front_view,req.body.top_view, new Date().toISOString(),req.params.rfid_ip );
+                res.send(true);
+            } else {
+                res.send(false);
+            }
+            console.log("Inside catch 1");
         }
     } catch (e) {
         console.error(false);
-        res.send(true);
+        res.send(false);
+        console.log("Inside catch 2");
+
     }
 
 };
