@@ -370,8 +370,13 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
 
                     } else {
                         if (req.params.open_type === "MANUAL") {
-                            const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
-                            res.send(true);
+                            if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
+                                const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
+                                res.send(true);
+                            } else {
+                                const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
+                                res.send(true);
+                            }
                         } else {
                             switch (index) {
                                 case 0:
@@ -426,8 +431,14 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
             } catch (e2) {
                 console.error(e2.stack);
                 if (req.params.open_type === "MANUAL") {
-                    const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
-                    res.send(true);
+                    if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
+                        const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
+                        res.send(true);
+                    } else {
+                        const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
+                        res.send(true);
+                    }
+
                 } else {
                     res.send(false);
                 }
@@ -435,8 +446,13 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
             }
         } else {
             if (req.params.open_type === "MANUAL") {
-                const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
-                res.send(true);
+                if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
+                    const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
+                    res.send(true);
+                } else {
+                    const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
+                    res.send(true);
+                }
             } else {
                 res.send(false);
             }
@@ -444,8 +460,13 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
     } catch (e) {
         console.error(false);
         if (req.params.open_type === "MANUAL") {
-            const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
-            res.send(true);
+            if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
+                const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
+                res.send(true);
+            } else {
+                const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
+                res.send(true);
+            }
         } else {
             res.send(false);
         }
