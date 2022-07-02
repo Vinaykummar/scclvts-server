@@ -220,6 +220,8 @@ exports.getVehicles = async () => {
   routes.route_id,
   vehicles.vehicle_no,
   vehicles.vehicle_tag_id, 
+  vehicles.vehicle_type_id, 
+  vehicles.status, 
   routes.route_name,
   areas.area_name,
   areas.area_id,
@@ -360,12 +362,13 @@ exports.getRfids = async () => {
 
 exports.getRoutes = async (area_id) => {
     const query = `
-  SELECT 
+    SELECT 
   *
   FROM 
   routes
   inner join areas on areas.area_id = routes.area_id
   inner join mines on mines.mine_id = routes.mine_id
+  inner join route_type on route_type.route_type_id = routes.route_type_id
   `;
     const data = await client.query(query);
     return data;
