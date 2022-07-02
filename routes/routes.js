@@ -24,7 +24,7 @@ router.get("/trips", controller.getTrips);
 router.get("/tripDetails/:id", controller.getTripDetails);
 router.post("/createrfid/:ipadd/:name/:frontip/:topip/:mine/:area/:status", controller.createRfid);
 router.post("/createroute/:name/:area/:mine", controller.createRoute);
-router.post("/create_route_config/:rid/:rfid/:optional", controller.createRouteConfig);
+router.post("/create_route_config", controller.createRouteConfig);
 router.post("/delete/region/:id", controller.deleteRegion);
 router.post("/delete/area/:id", controller.deleteArea);
 router.post("/delete/mine/:id", controller.deleteMine);
