@@ -23,7 +23,7 @@ router.get("/rfids", controller.getRfids);
 router.get("/trips", controller.getTrips);
 router.get("/tripDetails/:id", controller.getTripDetails);
 router.post("/createrfid/:ipadd/:name/:frontip/:topip/:mine/:area/:status", controller.createRfid);
-router.post("/createroute/:name/:area/:mine", controller.createRoute);
+router.post("/createroute/:name/:area/:mine/:route_type", controller.createRoute);
 router.post("/create_route_config", controller.createRouteConfig);
 router.post("/delete/region/:id", controller.deleteRegion);
 router.post("/delete/area/:id", controller.deleteArea);
@@ -38,6 +38,7 @@ router.post("/update_vehicle/:id/:name/:tag_id/:route_id/:area_id", controller.u
 
 router.get("/minesByType/:id", controller.getMinesbyType);
 router.get("/routesByType/:id", controller.getRoutesByType);
+router.get("/manuals", controller.getManuals);
 // router.get("/vehiclesByType/:id", controller.getMinesByType);
 
 module.exports = router;
