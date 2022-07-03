@@ -44,9 +44,9 @@ exports.createArea = async (name, region_id) => {
     })
 };
 
-exports.createRoute = async (name, area_id, mine_id) => {
+exports.createRoute = async (name, area_id, mine_id, route_type) => {
     try {
-        const query = `insert into routes(route_name, area_id, mine_id) values (` + "'" + name + "'" + `,` + "'" + area_id + "'" + `,` + "'" + mine_id + "'" + `) Returning route_id`;
+        const query = `insert into routes(route_name, area_id, mine_id,route_type_id) values (` + "'" + name + "'" + `,` + "'" + area_id + "'" + `,` + "'" + mine_id + "'" + `,`  + route_type +   `) Returning route_id`;
         return await client.query(query);
     } catch (e) {
         return e.stack;
@@ -150,6 +150,13 @@ exports.getMinesByType = async (typeId) => {
 
 exports.getMinesByAreaId = async (area_id) => {
     const query = "select * from mines where area_id = " + area_id;
+    const data = await client.query(query);
+    return data;
+};
+
+exports.getManuals = async () => {
+    const query = `select * from manual_vehicles
+inner join rfids on rfids.rfid_ip_address = manual_vehicles.rfid_ip_address order by timestamp desc`
     const data = await client.query(query);
     return data;
 };
