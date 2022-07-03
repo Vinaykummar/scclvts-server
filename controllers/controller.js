@@ -279,7 +279,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                         temp.push(point.route_id);
                                         temp.push("false");
                                         temp.push("NULL");
-                                        temp.push(new Date().toLocaleString());
+                                        temp.push(new Date().toISOString());
                                         temp.push(route.rows[0].vehicle_no);
                                         temp.push(point.route_name);
                                         temp.push(point.rfid_ip_address);
@@ -311,8 +311,8 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                 if (previousPoint.status == true && currentPoint.status == false) {
                                     if (previousPoint.open_type === "AUTO" || previousPoint.open_type === "MANUAL") {
                                         if (req.params.open_type === "AUTO") {
-                                            const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toLocaleString(), true, req.body.front_view, req.body.top_view)
-                                            const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toLocaleString())
+                                            const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
+                                            const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toISOString())
                                             if (route.rows[0].vehicle_type_name == 'PHD') {
                                                 const data3 = await postgress.updateVehicleStatus(route.rows[0].vehicle_id, false);
                                             }
@@ -321,8 +321,8 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                     }
                                 } else {
                                     if (previousPoint.optional == true) {
-                                        const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toLocaleString(), true, req.body.front_view, req.body.top_view)
-                                        const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toLocaleString())
+                                        const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
+                                        const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toISOString())
 
                                         if (route.rows[0].vehicle_type_name == 'PHD') {
                                             const data3 = await postgress.updateVehicleStatus(route.rows[0].vehicle_id, false);
@@ -330,8 +330,8 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                         res.send(true);
                                     } else {
                                         if (req.params.open_type === "MANUAL") {
-                                            const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "MANUAL", new Date().toLocaleString(), true, req.body.front_view, req.body.top_view)
-                                            const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toLocaleString())
+                                            const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "MANUAL", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
+                                            const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toISOString())
                                             if (route.rows[0].vehicle_type_name == 'PHD') {
                                                 const data3 = await postgress.updateVehicleStatus(route.rows[0].vehicle_id, false);
                                             }
@@ -353,17 +353,17 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                 if (previousPoint.status == true && currentPoint.status == false) {
                                     if (previousPoint.open_type === "AUTO" || previousPoint.open_type === "MANUAL") {
                                         if (req.params.open_type === "AUTO") {
-                                            const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toLocaleString(), true, req.body.front_view, req.body.top_view)
+                                            const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
                                             res.send(true);
                                         }
                                     }
                                 } else {
                                     if (previousPoint.optional == true) {
-                                        const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toLocaleString(), true, req.body.front_view, req.body.top_view)
+                                        const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
                                         res.send(true);
                                     } else {
                                         if (req.params.open_type === "MANUAL") {
-                                            const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "MANUAL", new Date().toLocaleString(), true, req.body.front_view, req.body.top_view)
+                                            const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "MANUAL", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
                                             res.send(true);
                                         } else {
                                             res.send(false);
@@ -376,10 +376,10 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                     } else {
                         if (req.params.open_type === "MANUAL") {
                             if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
-                                const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toLocaleString(), req.params.rfid_ip);
+                                const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                                 res.send(true);
                             } else {
-                                const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toLocaleString(), req.params.rfid_ip);
+                                const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                                 res.send(true);
                             }
                         } else {
@@ -398,7 +398,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                             temp.push(point.route_id);
                                             temp.push("false");
                                             temp.push("NULL");
-                                            temp.push(new Date().toLocaleString());
+                                            temp.push(new Date().toISOString());
                                             temp.push(route.rows[0].vehicle_no);
                                             temp.push(point.route_name);
                                             temp.push(point.rfid_ip_address);
@@ -437,10 +437,10 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                 console.error(e2.stack);
                 if (req.params.open_type === "MANUAL") {
                     if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
-                        const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toLocaleString(), req.params.rfid_ip);
+                        const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                         res.send(true);
                     } else {
-                        const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toLocaleString(), req.params.rfid_ip);
+                        const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                         res.send(true);
                     }
 
@@ -452,10 +452,10 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
         } else {
             if (req.params.open_type === "MANUAL") {
                 if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
-                    const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toLocaleString(), req.params.rfid_ip);
+                    const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                     res.send(true);
                 } else {
-                    const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toLocaleString(), req.params.rfid_ip);
+                    const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                     res.send(true);
                 }
             } else {
@@ -466,10 +466,10 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
         console.error(false);
         if (req.params.open_type === "MANUAL") {
             if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
-                const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toLocaleString(), req.params.rfid_ip);
+                const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                 res.send(true);
             } else {
-                const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toLocaleString(), req.params.rfid_ip);
+                const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                 res.send(true);
             }
         } else {
