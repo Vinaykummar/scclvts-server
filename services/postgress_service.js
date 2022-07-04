@@ -110,11 +110,13 @@ exports.getareas = async (user_name) => {
     const query = `
 select 
 areas.area_name,
-areas.area_id 
+areas.area_id,
+regions.region_name
 from 
 user_config
 inner join users on users.user_id = user_config.user_id
 inner join areas on areas.area_id = user_config.area_id
+inner join regions on regions.region_id = areas.region_id
 where users.username =` + "'" + user_name + "'" + ``;
     const data = await client.query(query);
     return data;
@@ -228,6 +230,7 @@ exports.getVehicles = async () => {
   vehicles.vehicle_no,
   vehicles.vehicle_tag_id, 
   vehicles.vehicle_type_id, 
+  vehicle_type.vehicle_type_name, 
   vehicles.status, 
   routes.route_name,
   areas.area_name,
@@ -240,6 +243,7 @@ exports.getVehicles = async () => {
   inner join areas on areas.area_id = vehicles.area_id
   INNER JOIN vehicle_route_config ON vehicle_route_config.vehicle_id = vehicles.vehicle_id
   INNER JOIN mines ON mines.mine_id = vehicles.mine_id
+  INNER JOIN vehicle_type ON vehicle_type.vehicle_type_id = vehicles.vehicle_type_id
   INNER JOIN routes ON routes.route_id = vehicle_route_config.route_id`;
     const data = await client.query(query);
     return data;
@@ -587,3 +591,37 @@ exports.updateTrip = async (id,time) => {
         return err;
     })
 }
+
+
+exports.getTripReports = async (vehicles,area,mine,from,to) => {
+    const tripDetailsQuery = `
+    SELECT 
+vehicles.vehicle_id,
+vehicles.vehicle_no,
+vehicle_type.vehicle_type_name,
+vehicle_type.vehicle_type_id,
+routes.route_name,
+mines.mine_name,
+mines.mine_Id,
+areas.area_name,
+trips.timestamp,
+trips.end_timestamp,
+trips.trip_active,
+trips.trip_id
+from 
+trips 
+inner join vehicles on vehicles.vehicle_id = trips.vehicle_id
+INNER JOIN vehicle_type ON vehicle_type.vehicle_type_id = vehicles.vehicle_type_id
+INNER JOIN routes ON routes.route_id = trips.route_id
+INNER JOIN mines ON mines.mine_id = routes.mine_id
+INNER JOIN areas ON areas.area_id = mines.area_id
+where trips.vehicle_id in `+vehicles+` and
+mines.mine_id = ` + mine + ` and 
+areas.area_id = ` + area + ` and 
+timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.5 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.5 hour' order by timestamp desc`;
+    var sql = format(tripDetailsQuery, vehicles);
+    console.log(sql);
+    const data = await client.query(sql);
+    console.log(data);
+    return data;
+};

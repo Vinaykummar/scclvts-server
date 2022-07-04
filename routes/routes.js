@@ -39,6 +39,6 @@ router.post("/update_vehicle/:id/:name/:tag_id/:route_id/:area_id", controller.u
 router.get("/minesByType/:id", controller.getMinesbyType);
 router.get("/routesByType/:id", controller.getRoutesByType);
 router.get("/manuals", controller.getManuals);
-// router.get("/vehiclesByType/:id", controller.getMinesByType);
+router.post("/tripReports", controller.getTripReports);
 
 module.exports = router;

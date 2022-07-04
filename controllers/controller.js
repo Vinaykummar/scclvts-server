@@ -578,3 +578,36 @@ exports.updateRfidPoint = async (req, res, next) => {
     }
 
 }
+
+exports.getTripReports = async (req, res, next) => {
+    console.log(req.body.payload);
+    const vehicles = req.body.payload.vehicles;
+    const mine = req.body.payload.mine_type;
+    const area = req.body.payload.area_type;
+    const from = req.body.payload.from;
+    const to = req.body.payload.to;
+    let str = "";
+    if(vehicles.length == 1) {
+        str = "(" + vehicles[0] + ")";
+    } else {
+        vehicles.forEach((val, index) => {
+            switch (index) {
+                case 0 : str = "(" + val + ","; break;
+                case vehicles.length -1 : str += val + ")"; break;
+                default: str += val + ","; break;
+            }
+        });
+    }
+
+
+    try {
+        const data = await postgress.getTripReports(
+            str,area,mine,from,to
+        );
+        console.log(data);
+        res.send(data.rows);
+    } catch (e) {
+        res.send(e.stack);
+    }
+
+}
