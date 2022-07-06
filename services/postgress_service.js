@@ -667,10 +667,11 @@ SELECT
 trip_info.trip_info_id,
 trip_info.timestamp,
 trips.trip_id,
+trips.trip_active,
 vehicles.vehicle_no,
 routes.route_name,
 vehicle_type.vehicle_type_name,
-trip_info.rfid_ip_address,
+trip_info.rfid_ip_address,  
 trip_info.rfid_name,
 mines.mine_name,
 areas.area_name
@@ -683,9 +684,9 @@ INNER JOIN mines ON mines.mine_id = routes.mine_id
 INNER JOIN areas ON areas.area_id = mines.area_id
 inner join vehicle_type on vehicle_type.vehicle_type_id = vehicles.vehicle_type_id
 where trip_info.rfid_ip_address =  ` + "'" + point + "'" + ` and 
-trip_info.status = true and mines.mine_id = ` + mine + ` and areas.area_id = ` + area + ` and 
+trip_info.status = true and  areas.area_id = ` + area + ` and 
 trip_info.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by trip_info.timestamp desc`;
     const data = await client.query(tripDetailsQuery);
-    console.log(data);
+    console.log(tripDetailsQuery);
     return data;
 };
