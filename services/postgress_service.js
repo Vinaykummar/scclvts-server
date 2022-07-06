@@ -156,9 +156,13 @@ exports.getMinesByAreaId = async (area_id) => {
     return data;
 };
 
-exports.getManuals = async () => {
+exports.getManuals = async (area) => {
     const query = `select * from manual_vehicles
-inner join rfids on rfids.rfid_ip_address = manual_vehicles.rfid_ip_address order by timestamp desc`
+inner join rfids on rfids.rfid_ip_address = manual_vehicles.rfid_ip_address 
+inner join mines on mines.mine_id = rfids.mine_id
+inner join areas on areas.area_id = rfids.area_id
+where areas.area_name = ` + "'" + area + "'" + ` order by manual_vehicles.timestamp desc`;
+    console.log(query);
     const data = await client.query(query);
     return data;
 };
@@ -593,35 +597,96 @@ exports.updateTrip = async (id,time) => {
 }
 
 
+// exports.getTripReports = async (vehicles,area,mine,from,to) => {
+//     const tripDetailsQuery = `
+//     SELECT
+// vehicles.vehicle_id,
+// vehicles.vehicle_no,
+// vehicle_type.vehicle_type_name,
+// vehicle_type.vehicle_type_id,
+// routes.route_name,
+// mines.mine_name,
+// mines.mine_Id,
+// areas.area_name,
+// trips.timestamp,
+// trips.end_timestamp,
+// trips.trip_active,
+// trips.trip_id
+// from
+// trips
+// inner join vehicles on vehicles.vehicle_id = trips.vehicle_id
+// INNER JOIN vehicle_type ON vehicle_type.vehicle_type_id = vehicles.vehicle_type_id
+// INNER JOIN routes ON routes.route_id = trips.route_id
+// INNER JOIN mines ON mines.mine_id = routes.mine_id
+// INNER JOIN areas ON areas.area_id = mines.area_id
+// where trips.vehicle_id in `+vehicles+`
+//  and trips.trip_active = false and mines.mine_id = ` + mine + ` and
+// areas.area_id = ` + area + ` and
+// timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.5 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.5 hour' order by timestamp desc`;
+//     var sql = format(tripDetailsQuery, vehicles);
+//     console.log(sql);
+//     const data = await client.query(sql);
+//     console.log(data);
+//     return data;
+// };
+
 exports.getTripReports = async (vehicles,area,mine,from,to) => {
     const tripDetailsQuery = `
-    SELECT 
+SELECT
+trip_info.trip_info_id,
+trips.trip_id,
 vehicles.vehicle_id,
 vehicles.vehicle_no,
-vehicle_type.vehicle_type_name,
-vehicle_type.vehicle_type_id,
 routes.route_name,
+vehicle_type.vehicle_type_name,
+trip_info.rfid_ip_address,
+trip_info.rfid_name,
 mines.mine_name,
-mines.mine_Id,
-areas.area_name,
-trips.timestamp,
-trips.end_timestamp,
-trips.trip_active,
-trips.trip_id
-from 
-trips 
-inner join vehicles on vehicles.vehicle_id = trips.vehicle_id
-INNER JOIN vehicle_type ON vehicle_type.vehicle_type_id = vehicles.vehicle_type_id
-INNER JOIN routes ON routes.route_id = trips.route_id
+areas.area_name
+from
+trip_info
+inner join trips on trips.trip_id = trip_info.trip_id
+inner join vehicles on vehicles.vehicle_id = trip_info.vehicle_id
+inner join routes on routes.route_id = trip_info.route_id
 INNER JOIN mines ON mines.mine_id = routes.mine_id
 INNER JOIN areas ON areas.area_id = mines.area_id
-where trips.vehicle_id in `+vehicles+` and
-mines.mine_id = ` + mine + ` and 
-areas.area_id = ` + area + ` and 
-timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.5 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.5 hour' order by timestamp desc`;
+inner join vehicle_type on vehicle_type.vehicle_type_id = vehicles.vehicle_type_id
+where trip_info.vehicle_id in `+vehicles+` and trip_info.rfid_ip_address in ('10.21.53.220', '10.21.58.2') and 
+trip_info.status = true and mines.mine_id = ` + mine + ` and areas.area_id = ` + area + ` and 
+trip_info.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by trip_info.timestamp desc`;
     var sql = format(tripDetailsQuery, vehicles);
     console.log(sql);
     const data = await client.query(sql);
     console.log(data);
+    return data;
+};
+
+exports.getTripReportsByPoint = async (point,area,mine,from,to) => {
+    const tripDetailsQuery = `
+SELECT
+trip_info.trip_info_id,
+trip_info.timestamp,
+trips.trip_id,
+trips.trip_active,
+vehicles.vehicle_no,
+routes.route_name,
+vehicle_type.vehicle_type_name,
+trip_info.rfid_ip_address,  
+trip_info.rfid_name,
+mines.mine_name,
+areas.area_name
+from
+trip_info
+inner join trips on trips.trip_id = trip_info.trip_id
+inner join vehicles on vehicles.vehicle_id = trip_info.vehicle_id
+inner join routes on routes.route_id = trip_info.route_id
+INNER JOIN mines ON mines.mine_id = routes.mine_id
+INNER JOIN areas ON areas.area_id = mines.area_id
+inner join vehicle_type on vehicle_type.vehicle_type_id = vehicles.vehicle_type_id
+where trip_info.rfid_ip_address =  ` + "'" + point + "'" + ` and 
+trip_info.status = true and  areas.area_id = ` + area + ` and 
+trip_info.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by trip_info.timestamp desc`;
+    const data = await client.query(tripDetailsQuery);
+    console.log(tripDetailsQuery);
     return data;
 };

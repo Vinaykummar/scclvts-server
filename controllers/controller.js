@@ -124,7 +124,7 @@ exports.getRoutesByType = async (req, res, next) => {
 };
 
 exports.getManuals = async (req, res, next) => {
-    const data = await postgress.getManuals();
+    const data = await postgress.getManuals(req.params.area_id);
     res.send(data.rows);
 };
 
@@ -375,13 +375,10 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
 
                     } else {
                         if (req.params.open_type === "MANUAL") {
-                            if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
-                                const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
-                                res.send(true);
-                            } else {
+
                                 const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                                 res.send(true);
-                            }
+
                         } else {
                             switch (index) {
                                 case 0:
@@ -436,13 +433,10 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
             } catch (e2) {
                 console.error(e2.stack);
                 if (req.params.open_type === "MANUAL") {
-                    if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
-                        const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
-                        res.send(true);
-                    } else {
+
                         const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                         res.send(true);
-                    }
+
 
                 } else {
                     res.send(false);
@@ -451,13 +445,10 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
             }
         } else {
             if (req.params.open_type === "MANUAL") {
-                if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
-                    const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
-                    res.send(true);
-                } else {
+
                     const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                     res.send(true);
-                }
+
             } else {
                 res.send(false);
             }
@@ -465,13 +456,10 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
     } catch (e) {
         console.error(false);
         if (req.params.open_type === "MANUAL") {
-            if(req.params.vehicle_no == undefined || req.params.vehicle_no == null || req.params.vehicle_no == "") {
-                const data = await postgress.createManualVehicle("UNAUTHORIZED VEHICLE", req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
-                res.send(true);
-            } else {
+
                 const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                 res.send(true);
-            }
+
         } else {
             res.send(false);
         }
@@ -598,11 +586,27 @@ exports.getTripReports = async (req, res, next) => {
             }
         });
     }
-
-
     try {
         const data = await postgress.getTripReports(
             str,area,mine,from,to
+        );
+        console.log(data);
+        res.send(data.rows);
+    } catch (e) {
+        res.send(e.stack);
+    }
+
+}
+
+exports.getTripReportsByPoint = async (req, res, next) => {
+    const point = req.body.payload.point;
+    const mine = req.body.payload.mine_type;
+    const area = req.body.payload.area_type;
+    const from = req.body.payload.from;
+    const to = req.body.payload.to;
+    try {
+        const data = await postgress.getTripReportsByPoint(
+            point,area,mine,from,to
         );
         console.log(data);
         res.send(data.rows);
