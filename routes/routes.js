@@ -20,7 +20,7 @@ router.get("/vehicle/route-details/:vehicle_no", controller.getVehicleRouteDetai
 //verify post request
 router.post("/vehicle/route/rfid/verify/:open_type/:vehicle_no/:rfid_ip", controller.getVehicleRouteRfidPoint);
 router.get("/rfids", controller.getRfids);
-router.get("/trips", controller.getTrips);
+router.post("/trips", controller.getTrips);
 router.get("/tripDetails/:id", controller.getTripDetails);
 router.post("/createrfid/:ipadd/:name/:frontip/:topip/:mine/:area/:status", controller.createRfid);
 router.post("/createroute/:name/:area/:mine/:route_type", controller.createRoute);
@@ -38,7 +38,7 @@ router.post("/update_vehicle/:id/:name/:tag_id/:route_id/:area_id/:mine_id/:vehi
 
 router.get("/minesByType/:id", controller.getMinesbyType);
 router.get("/routesByType/:id", controller.getRoutesByType);
-router.get("/manuals/:area_id", controller.getManuals);
+router.post("/manuals", controller.getManuals);
 router.post("/tripReports", controller.getTripReports);
 router.post("/tripReportsByPoint", controller.getTripReportsByPoint);
 router.get("/getActiveTrip/:id", controller.getActiveTrip);

@@ -156,12 +156,14 @@ exports.getMinesByAreaId = async (area_id) => {
     return data;
 };
 
-exports.getManuals = async (area) => {
+exports.getManuals = async (area, from, to) => {
     const query = `select * from manual_vehicles
 inner join rfids on rfids.rfid_ip_address = manual_vehicles.rfid_ip_address 
 inner join mines on mines.mine_id = rfids.mine_id
 inner join areas on areas.area_id = rfids.area_id
-where areas.area_name = ` + "'" + area + "'" + ` order by manual_vehicles.timestamp desc`;
+where areas.area_id = ` + "'" + area + "'" + ` and
+manual_vehicles.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by manual_vehicles.timestamp desc
+`;
     console.log(query);
     const data = await client.query(query);
     return data;
@@ -523,21 +525,28 @@ exports.createTrip = async (vno, route_id) => {
     return data;
 };
 
-exports.getTrips = async () => {
-    const query = `select
+exports.getTrips = async (vehicle,area, from, to) => {
+    const query = `
+SELECT
+vehicles.vehicle_no,
 trips.trip_id,
 trips.vehicle_id,
-trips.route_id,
 trips.trip_active,
 trips.timestamp,
 trips.end_timestamp,
-vehicles.vehicle_no,
 routes.route_name,
-routes.area_id
+areas.area_name,
+mines.mine_name
 from
 trips
 inner join vehicles on vehicles.vehicle_id = trips.vehicle_id
-inner join routes on routes.route_id = trips.route_id order by trips.timestamp desc`;
+inner join routes on routes.route_id = trips.route_id
+INNER JOIN mines ON mines.mine_id = routes.mine_id
+INNER JOIN areas ON areas.area_id = mines.area_id
+inner join vehicle_type on vehicle_type.vehicle_type_id = vehicles.vehicle_type_id
+where vehicles.vehicle_no = ` + "'" + vehicle + "'" +  ` and areas.area_id = ` + area + ` and
+ trips.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by trips.timestamp desc`;
+    console.log(query);
     const data = await client.query(query);
     return data;
 };
@@ -548,18 +557,17 @@ exports.getTripDetailsByTripId = async (id) => {
     return data;
 };
 
-exports.getActiveTripByVehicle_id = async (vno) => {
-    const query = `select
-trips.trip_id,
-trips.vehicle_id,
-trips.route_id,
-trips.trip_active,
-trips.timestamp,
-vehicles.vehicle_no
-from
-trips
-inner join vehicles on vehicles.vehicle_id = trips.vehicle_id
-where vehicles.vehicle_no = ` + "'" + vno + "'" + ` and trips.trip_active=true`;
+exports.getActiveTripByVehicle_id = async (id) => {
+    const query =
+        `select 
+  vehicles.vehicle_id,
+  vehicles.vehicle_no,
+  trips.trip_active
+  from 
+  vehicles 
+  inner join areas on areas.area_id = vehicles.area_id
+  INNER JOIN trips ON trips.vehicle_id = vehicles.vehicle_id
+  where trips.trip_active = true  and areas.area_id = ` + id + ``;
     const data = await client.query(query);
     // console.log(data);
     return data;
