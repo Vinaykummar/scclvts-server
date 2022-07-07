@@ -124,7 +124,10 @@ exports.getRoutesByType = async (req, res, next) => {
 };
 
 exports.getManuals = async (req, res, next) => {
-    const data = await postgress.getManuals(req.params.area_id);
+    const area = req.body.payload.area_type;
+    const from = req.body.payload.from;
+    const to = req.body.payload.to;
+    const data = await postgress.getManuals(area, from, to);
     res.send(data.rows);
 };
 
@@ -142,20 +145,22 @@ exports.getRouteDetailsByRouteId = async (req, res, next) => {
 
 exports.createVehicle = async (req, res, next) => {
     console.log(req.params.name);
-    const vehicle = await postgress.getVehicleByVehicleNo(req.params.name);
+    const vno = req.params.name;
+    const vehicle = await postgress.getVehicleByVehicleNo(vno.toUpperCase());
     // console.log(vehicle);
     if (vehicle.rows.length > 0) {
-        const data = await postgress.updateVehicle(vehicle.rows[0].vehicle_id, req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id, req.params.mine_id, req.params.vehicle_type, req.params.status);
+        const data = await postgress.updateVehicle(vehicle.rows[0].vehicle_id, vno.toUpperCase(), vno.toUpperCase(), req.params.area_id, req.params.route_id, req.params.mine_id, req.params.vehicle_type, req.params.status);
         res.send("true");
     } else {
-        const data = await postgress.createVehicle(req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id, req.params.mine_id, req.params.vehicle_type, req.params.status);
+        const data = await postgress.createVehicle(vno.toUpperCase(), vno.toUpperCase(), req.params.area_id, req.params.route_id, req.params.mine_id, req.params.vehicle_type, req.params.status);
         res.send("true");
     }
 
 };
 
 exports.updateVehicle = async (req, res, next) => {
-    const data = await postgress.updateVehicle(req.params.id, req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id, req.params.mine_id, req.params.vehicle_type, req.params.status);
+    const vno = req.params.name;
+    const data = await postgress.updateVehicle(req.params.id, vno.toUpperCase(), vno.toUpperCase(), req.params.area_id, req.params.route_id, req.params.mine_id, req.params.vehicle_type, req.params.status);
     res.send(data);
 };
 
@@ -476,7 +481,11 @@ exports.getRfids = async (req, res, next) => {
 };
 
 exports.getTrips = async (req, res, next) => {
-    const data = await postgress.getTrips();
+    const vehicle = req.body.payload.vehicle;
+    const area = req.body.payload.area_type;
+    const from = req.body.payload.from;
+    const to = req.body.payload.to;
+    const data = await postgress.getTrips(vehicle,area,from,to);
     res.send(data.rows);
 };
 
