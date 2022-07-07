@@ -155,7 +155,7 @@ exports.createVehicle = async (req, res, next) => {
 };
 
 exports.updateVehicle = async (req, res, next) => {
-    const data = await postgress.updateVehicle(req.params.id, req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id);
+    const data = await postgress.updateVehicle(req.params.id, req.params.name, req.params.tag_id, req.params.area_id, req.params.route_id, req.params.mine_id, req.params.vehicle_type, req.params.status);
     res.send(data);
 };
 
@@ -570,6 +570,7 @@ exports.updateRfidPoint = async (req, res, next) => {
 exports.getTripReports = async (req, res, next) => {
     console.log(req.body.payload);
     const vehicles = req.body.payload.vehicles;
+    const vehicle_type = req.body.payload.vehicle_type;
     const mine = req.body.payload.mine_type;
     const area = req.body.payload.area_type;
     const from = req.body.payload.from;
@@ -587,11 +588,20 @@ exports.getTripReports = async (req, res, next) => {
         });
     }
     try {
-        const data = await postgress.getTripReports(
-            str,area,mine,from,to
-        );
-        console.log(data);
-        res.send(data.rows);
+        if(vehicle_type == 2) {
+           const points =  "('10.21.53.220', '10.21.58.2')";
+            const data = await postgress.getTripReports(
+                str,area,mine,from,to,points
+            );
+            res.send(data.rows);
+        } else {
+            const points =  "('10.21.53.238', '10.21.1.220')";
+            const data = await postgress.getTripReportsPHD(
+                str,area,mine,from,to,points
+            );
+            res.send(data.rows);
+        }
+
     } catch (e) {
         res.send(e.stack);
     }
@@ -607,6 +617,19 @@ exports.getTripReportsByPoint = async (req, res, next) => {
     try {
         const data = await postgress.getTripReportsByPoint(
             point,area,mine,from,to
+        );
+        console.log(data);
+        res.send(data.rows);
+    } catch (e) {
+        res.send(e.stack);
+    }
+
+}
+
+exports.getActiveTrip = async (req, res, next) => {
+    try {
+        const data = await postgress.getActiveTripByVehicle_id(
+           req.params.id
         );
         console.log(data);
         res.send(data.rows);
