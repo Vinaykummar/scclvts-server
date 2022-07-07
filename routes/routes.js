@@ -34,12 +34,13 @@ router.post("/delete/rfid/:id", controller.deleteRfid);
 router.post("/delete/route_config/:id", controller.deleteRouteConfigByRouteConfigId);
 router.post("/delete/route/route_config/:id", controller.deleteRouteConfigByRouteId);
 router.post("/updaterfid/:id/:ipadd/:name/:frontip/:topip/:mine/:area/:status", controller.updateRfidPoint);
-router.post("/update_vehicle/:id/:name/:tag_id/:route_id/:area_id", controller.updateVehicle);
+router.post("/update_vehicle/:id/:name/:tag_id/:route_id/:area_id/:mine_id/:vehicle_type/:status", controller.updateVehicle);
 
 router.get("/minesByType/:id", controller.getMinesbyType);
 router.get("/routesByType/:id", controller.getRoutesByType);
 router.get("/manuals/:area_id", controller.getManuals);
 router.post("/tripReports", controller.getTripReports);
 router.post("/tripReportsByPoint", controller.getTripReportsByPoint);
+router.get("/getActiveTrip/:id", controller.getActiveTrip);
 
 module.exports = router;
