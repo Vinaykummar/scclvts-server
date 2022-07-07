@@ -557,17 +557,18 @@ exports.getTripDetailsByTripId = async (id) => {
     return data;
 };
 
-exports.getActiveTripByVehicle_id = async (id) => {
-    const query =
-        `select 
-  vehicles.vehicle_id,
-  vehicles.vehicle_no,
-  trips.trip_active
-  from 
-  vehicles 
-  inner join areas on areas.area_id = vehicles.area_id
-  INNER JOIN trips ON trips.vehicle_id = vehicles.vehicle_id
-  where trips.trip_active = true  and areas.area_id = ` + id + ``;
+exports.getActiveTripByVehicle_id = async (vno) => {
+    const query = `select
+trips.trip_id,
+trips.vehicle_id,
+trips.route_id,
+trips.trip_active,
+trips.timestamp,
+vehicles.vehicle_no
+from
+trips
+inner join vehicles on vehicles.vehicle_id = trips.vehicle_id
+where vehicles.vehicle_no = ` + "'" + vno + "'" + ` and trips.trip_active=true`;
     const data = await client.query(query);
     // console.log(data);
     return data;
