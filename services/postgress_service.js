@@ -1,10 +1,10 @@
 const {Client} = require("pg");
 const format = require("pg-format");
 const client = new Client({
-    user: "mtqddqwuuphbvr",
-    password: "1631a6aa1b5f7bae708bd9965be0fe641578c1d2e4f013fac2e46e8c5885a583",
-    database: "dfov6ifh4k5mjh",
-    host: "ec2-23-23-182-238.compute-1.amazonaws.com",
+    user: "uedhcthd49fusd",
+    password: "pec653ff5f2414b94af5b12870abf41a80e74d8d76173725c18a7c14eacbe621e",
+    database: "de1tts8su5l4c8",
+    host: "ec2-50-17-64-161.compute-1.amazonaws.com",
     port: 5432,
     ssl: {rejectUnauthorized: false}
 });
