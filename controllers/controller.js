@@ -466,10 +466,19 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                 res.send(true);
 
         } else {
-            res.send(false);
+            const vno = req.params.vehicle_no;
+            var prefix = req.params.vehicle_no.substring(0, 9);
+            var suffix = req.params.vehicle_no.substring(9);
+            console.log(prefix)
+            console.log(suffix);
+           if(suffix === 'PH' || suffix === 'PHD') {
+               const data = await postgress.createManualVehicle(prefix, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
+               res.send(true);
+           } else {
+               res.send(false);
+           }
         }
         console.log("Inside catch 2");
-
     }
 
 };
@@ -637,7 +646,7 @@ exports.getTripReportsByPoint = async (req, res, next) => {
 
 exports.getActiveTrip = async (req, res, next) => {
     try {
-        const data = await postgress.getActiveTripByVehicle_id(
+        const data = await postgress.getOnGoingTrips(
            req.params.id
         );
         console.log(data);
@@ -645,5 +654,17 @@ exports.getActiveTrip = async (req, res, next) => {
     } catch (e) {
         res.send(e.stack);
     }
+}
 
+exports.endActiveTrip = async (req, res, next) => {
+    try {
+        const data = await postgress.endActiveTrip(
+            req.params.id,
+            new Date().toISOString()
+        );
+        console.log(data);
+        res.send(data.rows);
+    } catch (e) {
+        res.send(e.stack);
+    }
 }

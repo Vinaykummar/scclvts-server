@@ -557,7 +557,7 @@ exports.getTripDetailsByTripId = async (id) => {
     return data;
 };
 
-exports.getActiveTripByVehicle_id = async (vno) => {
+exports.getActiveTripByVehicle_id = async (vno) => { 
     const query = `select
 trips.trip_id,
 trips.vehicle_id,
@@ -569,6 +569,22 @@ from
 trips
 inner join vehicles on vehicles.vehicle_id = trips.vehicle_id
 where vehicles.vehicle_no = ` + "'" + vno + "'" + ` and trips.trip_active=true`;
+    const data = await client.query(query);
+    // console.log(data);
+    return data;
+};
+
+exports.getOnGoingTrips = async (id) => {
+    const query =
+        `select 
+  vehicles.vehicle_id,
+  vehicles.vehicle_no,
+  trips.trip_active
+  from 
+  vehicles 
+  inner join areas on areas.area_id = vehicles.area_id
+  INNER JOIN trips ON trips.vehicle_id = vehicles.vehicle_id
+  where trips.trip_active = true  and areas.area_id = ` + id + ``;
     const data = await client.query(query);
     // console.log(data);
     return data;
@@ -596,6 +612,16 @@ exports.updateTripDetail = async (id, type, timestamp, status,front_view,top_vie
 }
 
 exports.updateTrip = async (id,time) => {
+    const query = `UPDATE trips SET 
+        trip_active = false, end_timestamp = `+"'" + time + "'" + `  WHERE trip_id = ` + id;
+    client.query(query).then((res) => {
+        return res;
+    }).catch((err) => {
+        return err;
+    })
+}
+
+exports.endActiveTrip = async (id,time) => {
     const query = `UPDATE trips SET 
         trip_active = false, end_timestamp = `+"'" + time + "'" + `  WHERE trip_id = ` + id;
     client.query(query).then((res) => {
