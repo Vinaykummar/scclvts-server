@@ -471,7 +471,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
             var suffix = req.params.vehicle_no.substring(9);
             console.log(prefix)
             console.log(suffix);
-           if(suffix === 'PH' || suffix === 'PHD') {
+           if(suffix === 'BT' || suffix === 'BTP') {
                const data = await postgress.createManualVehicle(prefix, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                res.send(true);
            } else {
