@@ -42,5 +42,6 @@ router.post("/manuals", controller.getManuals);
 router.post("/tripReports", controller.getTripReports);
 router.post("/tripReportsByPoint", controller.getTripReportsByPoint);
 router.get("/getActiveTrip/:id", controller.getActiveTrip);
+router.get("/endActiveTrip/:id", controller.endActiveTrip);
 
 module.exports = router;
