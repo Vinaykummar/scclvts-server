@@ -380,10 +380,8 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
 
                     } else {
                         if (req.params.open_type === "MANUAL") {
-
                                 const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
                                 res.send(true);
-
                         } else {
                             switch (index) {
                                 case 0:
@@ -462,23 +460,14 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
         console.error(false);
         if (req.params.open_type === "MANUAL") {
 
-                const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
-                res.send(true);
+            const data = await postgress.createManualVehicle(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
+            res.send(true);
 
         } else {
-            const vno = req.params.vehicle_no;
-            var prefix = req.params.vehicle_no.substring(0, 9);
-            var suffix = req.params.vehicle_no.substring(9);
-            console.log(prefix)
-            console.log(suffix);
-           if(suffix === 'BT' || suffix === 'BTP') {
-               const data = await postgress.createManualVehicle(prefix, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
-               res.send(true);
-           } else {
-               res.send(false);
-           }
+            res.send(false);
         }
         console.log("Inside catch 2");
+
     }
 
 };
