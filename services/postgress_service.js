@@ -746,9 +746,9 @@ where trip_info.vehicle_id in `+vehicles+` and trip_info.rfid_ip_address in ` + 
 trip_info.status = true and mines.mine_id = ` + mine + ` and areas.area_id = ` + area + ` and 
 trip_info.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by trip_info.timestamp desc`;
     var sql = format(tripDetailsQuery, vehicles);
-    console.log(sql);
+    // console.log(sql);
     const data = await client.query(tripDetailsQuery);
-    console.log(data);
+    // console.log(data);
     return data;
 };
 
