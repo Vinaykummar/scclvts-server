@@ -586,6 +586,8 @@ exports.getTripReports = async (req, res, next) => {
     const area = req.body.payload.area_type;
     const from = req.body.payload.from;
     const to = req.body.payload.to;
+    const source = req.body.payload.source;
+    const destination = req.body.payload.destination;
     let str = "";
     if(vehicles.length == 1) {
         str = "(" + vehicles[0] + ")";
@@ -599,19 +601,12 @@ exports.getTripReports = async (req, res, next) => {
         });
     }
     try {
-        if(vehicle_type == 2) {
-           const points =  "('10.21.53.220', '10.21.58.2')";
-            const data = await postgress.getTripReports(
-                str,area,mine,from,to,points
-            );
-            res.send(data.rows);
-        } else {
-            const points =  "('10.21.53.238', '10.21.1.220')";
+            const points =  "(" + "'" + source + "'" + ", " + "'" + destination + "'" + ")";
+            console.log(points);
             const data = await postgress.getTripReportsPHD(
                 str,area,mine,from,to,points
             );
             res.send(data.rows);
-        }
 
     } catch (e) {
         res.send(e.stack);
