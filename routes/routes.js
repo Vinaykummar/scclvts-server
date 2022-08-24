@@ -41,7 +41,9 @@ router.get("/routesByType/:id", controller.getRoutesByType);
 router.post("/manuals", controller.getManuals);
 router.post("/tripReports", controller.getTripReports);
 router.post("/tripReportsByPoint", controller.getTripReportsByPoint);
+router.post("/clearStage/:id", controller.clearStage)
 router.get("/getActiveTrip/:id", controller.getActiveTrip);
 router.get("/endActiveTrip/:id", controller.endActiveTrip);
+router.get("/resumeTrip/:id", controller.resumeTrip);
 
 module.exports = router;
