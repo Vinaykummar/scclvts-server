@@ -54,7 +54,7 @@ exports.createRoute = async (name, area_id, mine_id, route_type) => {
 };
 
 exports.createRouteConfig = async (body) => {
-   const query = `insert into route_config(route_id, rfid_id, optional) values %L`;
+   const query = `insert into route_config(route_id, rfid_id, optional, route_start, route_end, preweightbin) values %L`;
 
     var sql =   format(query,body);
     console.log(sql);
@@ -417,7 +417,10 @@ exports.getRouteDetails = async (id) => {
   mines.mine_name,
   areas.area_name,
   route_config.route_config_id,
-  route_config.optional
+  route_config.optional,
+  route_config.route_start,
+  route_config.route_end,
+  route_config.preweightbin
   FROM 
   routes 
   INNER JOIN route_config ON route_config.route_id = routes.route_id 
@@ -440,7 +443,10 @@ rfids.rfid_front_cam_ip_address,
 rfids.rfid_top_cam_ip_address,
 mines.mine_name,
 areas.area_name,
-route_config.optional
+route_config.optional,
+route_config.route_start,
+route_config.route_end,
+route_config.preweightbin
 FROM 
 routes 
 INNER JOIN route_config ON route_config.route_id = routes.route_id 
@@ -592,7 +598,7 @@ exports.getOnGoingTrips = async (id) => {
 
 exports.createTrip_Detail = async (values) => {
     const tripDetailsQuery = `insert into trip_info
-                        (trip_id,vehicle_id,route_id,status,open_type,timestamp,vehicle_no,route_name,rfid_ip_address,rfid_name,trip_active,front_view,top_view,optional)
+                        (trip_id,vehicle_id,route_id,status,open_type,timestamp,vehicle_no,route_name,rfid_ip_address,rfid_name,trip_active,front_view,top_view,optional,route_start,route_end,preweightbin) 
                         values %L Returning trip_info_id`;
     var sql = format(tripDetailsQuery, values);
     console.log(sql);
@@ -607,9 +613,12 @@ exports.updateTripDetail = async (id, type, timestamp, status,front_view,top_vie
     client.query(query).then((res) => {
         return res;
     }).catch((err) => {
+        console.log(err);
         return err;
     })
 }
+
+
 
 exports.updateTrip = async (id,time) => {
     const query = `UPDATE trips SET 
@@ -630,6 +639,17 @@ exports.endActiveTrip = async (id,time) => {
         return err;
     })
 }
+
+exports.resumeTrip = async (id,time) => {
+    const query = `UPDATE trips SET 
+        trip_active = true WHERE trip_id = ` + id;
+    client.query(query).then((res) => {
+        return res;
+    }).catch((err) => {
+        return err;
+    })
+}
+
 
 
 // exports.getTripReports = async (vehicles,area,mine,from,to) => {
@@ -765,10 +785,12 @@ vehicle_type.vehicle_type_name,
 trip_info.rfid_ip_address,  
 trip_info.rfid_name,
 mines.mine_name,
-areas.area_name
+areas.area_name,
+trip_info.status,
+trip_info.open_type
 from
 trip_info
-inner join trips on trips.trip_id = trip_info.trip_id
+inner join trips on trips.trip_id = trip_info.trip_id 
 inner join vehicles on vehicles.vehicle_id = trip_info.vehicle_id
 inner join routes on routes.route_id = trip_info.route_id
 INNER JOIN mines ON mines.mine_id = routes.mine_id
