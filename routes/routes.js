@@ -19,6 +19,7 @@ router.get("/vehicle/route/:vehicle_no", controller.getVehicleRouteByVehicleNo);
 router.get("/vehicle/route-details/:vehicle_no", controller.getVehicleRouteDetailsByVehicleNo);
 //verify post request
 router.post("/vehicle/route/rfid/verify/:open_type/:vehicle_no/:rfid_ip", controller.getVehicleRouteRfidPoint);
+router.post("/vehicle/route/rfid/verify/allow/:open_type/:vehicle_no/:rfid_ip", controller.addToAllowedTrips);
 router.get("/rfids", controller.getRfids);
 router.post("/trips", controller.getTrips);
 router.get("/tripDetails/:id", controller.getTripDetails);

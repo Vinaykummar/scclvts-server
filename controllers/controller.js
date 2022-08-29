@@ -504,6 +504,33 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
 
 };
 
+exports.addToAllowedTrips = async (req,res) => {
+
+    console.log(req.params.vehicle_no);
+    console.log(req.params.rfid_ip);
+    console.log(req.body.front_view);
+    console.log(req.body.top_view);
+    let value = [];
+    let temp = [];
+    value.push(req.params.vehicle_no);
+    value.push(true);
+    value.push("AUTO");
+    value.push(new Date().toISOString());
+    value.push(req.params.rfid_ip);
+    value.push(req.body.front_view);
+    value.push(req.body.top_view);
+    temp.push(value);
+
+
+    try{
+        const data = await postgress.insertIntoAllowedTrips(temp);
+        res.send(true);
+    }catch (e) {
+        console.log(e);
+        res.send(e);
+    }
+}
+
 
 exports.getRfids = async (req, res, next) => {
     const data = await postgress.getRfids();
