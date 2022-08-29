@@ -606,6 +606,16 @@ exports.createTrip_Detail = async (values) => {
     return data;
 };
 
+exports.insertIntoAllowedTrips = async (values) => {
+    const tripDetailsQuery = `insert into allowed_vehicles
+                        (vehicle_no,status,open_type,timestamp,rfid_ip_address,front_view,top_view) 
+                        values %L `;
+    var sql = format(tripDetailsQuery, values);
+    console.log(sql);
+    const data = await client.query(sql);
+    return data;
+};
+
 exports.updateTripDetail = async (id, type, timestamp, status,front_view,top_view) => {
     const query = `UPDATE trip_info SET 
         open_type = ` + "'" + type + "'" + `,timestamp = ` + "'" + timestamp + "'" + `,front_view = ` + "'" + front_view + "'" + `,top_view = ` + "'" + top_view + "'" + `,status =` + status + ` WHERE trip_info_id = ` + id;
