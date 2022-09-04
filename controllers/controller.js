@@ -680,7 +680,7 @@ exports.getTripReportsByPoint = async (req, res, next) => {
     const from = req.body.payload.from;
     const to = req.body.payload.to;
     try {
-        if(area === 33 || area === 34) {
+        if(area === 33 || area === 34 || area === 39 || area === 40|| area === 41) {
             console.log("getTripReportsByPointAllowedVehicles");
             const data = await postgress.getTripReportsByPointAllowedVehicles(
                 point, area, mine, from, to
