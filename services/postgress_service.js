@@ -813,3 +813,29 @@ trip_info.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 
     console.log(tripDetailsQuery);
     return data;
 };
+
+exports.getTripReportsByPointAllowedVehicles = async (point,area,mine,from,to) => {
+    const tripDetailsQuery = `
+SELECT
+allowed_vehicles.timestamp,
+allowed_vehicles.vehicle_no,
+allowed_vehicles.rfid_ip_address,  
+rfids.rfid_name,
+mines.mine_name,
+areas.area_name,
+allowed_vehicles.status,
+allowed_vehicles.open_type,
+allowed_vehicles.front_view,
+allowed_vehicles.top_view
+from
+allowed_vehicles
+inner join rfids on rfids.rfid_ip_address = allowed_vehicles.rfid_ip_address 
+INNER JOIN mines ON mines.mine_id = rfids.mine_id
+INNER JOIN areas ON areas.area_id = mines.area_id
+where allowed_vehicles.rfid_ip_address =  ` + "'" + point + "'" + ` and 
+allowed_vehicles.status = true and  areas.area_id = ` + area + ` and 
+allowed_vehicles.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by allowed_vehicles.timestamp desc`;
+    const data = await client.query(tripDetailsQuery);
+    console.log(tripDetailsQuery);
+    return data;
+};

@@ -680,16 +680,28 @@ exports.getTripReportsByPoint = async (req, res, next) => {
     const from = req.body.payload.from;
     const to = req.body.payload.to;
     try {
-        const data = await postgress.getTripReportsByPoint(
-            point,area,mine,from,to
-        );
-        console.log(data);
-        res.send(data.rows);
+        if(area === 33 || area === 34) {
+            console.log("getTripReportsByPointAllowedVehicles");
+            const data = await postgress.getTripReportsByPointAllowedVehicles(
+                point, area, mine, from, to
+            );
+            console.log(data);
+            res.send(data.rows);
+        } else {
+            const data = await postgress.getTripReportsByPoint(
+                point, area, mine, from, to
+            );
+            console.log(data);
+            res.send(data.rows);
+        }
+
     } catch (e) {
         res.send(e.stack);
     }
 
 }
+
+
 
 exports.getActiveTrip = async (req, res, next) => {
     try {
