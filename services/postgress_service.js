@@ -773,7 +773,7 @@ INNER JOIN mines ON mines.mine_id = routes.mine_id
 INNER JOIN areas ON areas.area_id = mines.area_id
 inner join vehicle_type on vehicle_type.vehicle_type_id = vehicles.vehicle_type_id
 where trip_info.vehicle_id in `+vehicles+` and trip_info.rfid_ip_address in ` + points +` and 
-trip_info.status = true and mines.mine_id = ` + mine + ` and areas.area_id = ` + area + ` and 
+trip_info.status = true and areas.area_id = ` + area + ` and 
 trip_info.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by trip_info.timestamp desc`;
     var sql = format(tripDetailsQuery, vehicles);
     console.log(sql);
