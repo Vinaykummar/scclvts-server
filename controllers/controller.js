@@ -366,6 +366,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                                 }
                                                 res.send(true);
                                             } else {
+                                                console.log("not touched point");
                                                 res.send(false);
                                             }
                                         }
