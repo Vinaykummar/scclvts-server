@@ -231,6 +231,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                 if (data.rows.length == 0) {
                     res.send(false);
                 } else {
+                    
                     const route_points = await (await postgress.getRouteDetailsByRouteId(data.rows[0].route_id)).rows;
                     // console.log(route_points);
                     let index = route_points.findIndex((route_point) => route_point.rfid_ip_address === req.params.rfid_ip);
@@ -280,8 +281,8 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
 
                         if(gotPoint.route_start) {
                             console.log("Double time start");
-                            const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
-                            res.send(true);
+                            // const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
+                            res.send(false);
                         } else {
                             if(gotPoint.route_start == false && gotPoint.route_end == true) {
                                 console.log("trip end");
@@ -389,7 +390,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                         }
                                     }
                                 } else {
-                                    if (previousPointFromRoute.optional == false && previousPointFromRoute.route_start == true ) {
+                                    if (previousPointFromRoute.optional == false && previousPointFromRoute.route_start == true && previousPoint.status == false) {
                                         const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
                                         res.send(true);
                                     } else {
