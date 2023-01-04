@@ -359,7 +359,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                             }
                                             res.send(true);
                                         } else {
-                                            if(allOptionalPoints.length == 0) {
+                                            if(allOptionalPoints.length == 0 && previousPoint.status == true) {
                                                 const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
                                                 const data2 = await postgress.updateTrip(activeTrip[0].trip_id, new Date().toISOString())
                                                 if (route.rows[0].vehicle_type_name == 'PHD') {
