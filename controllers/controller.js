@@ -417,7 +417,12 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                                     const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
                                                     res.send(true);
                                                 } else {
-                                                    res.send(false);
+                                                    if(previousPoint.optional === true && previousPoint.status === false && currentPoint.optional === false && currentPoint.status === false){
+                                                        const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
+                                                        res.send(true);
+                                                       } else {
+                                                        res.send(false);
+                                                       }
                                                 }
                                             }
 
