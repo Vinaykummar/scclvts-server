@@ -412,21 +412,12 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
                                                     res.send(true);
                                                 }
                                             } else {
-                                                var touchedOptionalPoints = allOptionalPoints.filter((point) => point.status == true);
+                                                 var touchedOptionalPoints = allOptionalPoints.filter((point) => point.status == true);
                                                 if(previousPoint.optional == true && touchedOptionalPoints.length > 0) {
                                                     const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
                                                     res.send(true);
                                                 } else {
-                                                   if(previousPoint.optional === true
-                                                       && previousPoint.status === false
-                                                        && currentPoint.status === false
-                                                       && currentPoint.optional === false
-                                                   ) {
-                                                       const data = await postgress.updateTripDetail(currentPoint.trip_info_id, "AUTO", new Date().toISOString(), true, req.body.front_view, req.body.top_view)
-                                                       res.send(true);
-                                                   } else {
-                                                       res.send(false);
-                                                   }
+                                                    res.send(false);
                                                 }
                                             }
 
