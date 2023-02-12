@@ -46,5 +46,7 @@ router.post("/clearStage/:id", controller.clearStage)
 router.get("/getActiveTrip/:id", controller.getActiveTrip);
 router.get("/endActiveTrip/:id", controller.endActiveTrip);
 router.get("/resumeTrip/:id", controller.resumeTrip);
+router.post("/allRecordsByRfidPoint", controller.getAllRecordsByRfidPoint);
+router.post("/allRecordsByRfidPointAndVehicle", controller.getAllRecordsByRfidPointAndVehicle);
 
 module.exports = router;
