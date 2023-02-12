@@ -169,6 +169,88 @@ manual_vehicles.timestamp between ` + "'" + from + "'" + `::timestamp - interval
     return data;
 };
 
+exports.allRecordsByVehicleNoAndRfidPoint = async (area, from, to, vno, rfidIp) => {
+    const query = `select * from all_records
+inner join rfids on rfids.rfid_ip_address = all_records.rfid_ip_address 
+inner join mines on mines.mine_id = rfids.mine_id
+inner join areas on areas.area_id = rfids.area_id
+where areas.area_id = ` + "'" + area + "'" + ` and
+all_records.vehicle_no = ` + "'" + vno + "'" + `  and
+all_records.rfid_ip_address = ` + "'" + rfidIp + "'" + ` and
+all_records.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by all_records.timestamp desc
+`;
+    console.log(query);
+    const data = await client.query(query);
+    return data;
+};
+
+exports.allRecordsByAllVehicleNoAndRfidPoint = async (area, from, to, vno, rfidIp) => {
+    const query = `select * from all_records
+inner join rfids on rfids.rfid_ip_address = all_records.rfid_ip_address 
+inner join mines on mines.mine_id = rfids.mine_id
+inner join areas on areas.area_id = rfids.area_id
+where areas.area_id = ` + "'" + area + "'" + ` and
+all_records.rfid_ip_address = ` + "'" + rfidIp + "'" + ` and
+all_records.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by all_records.timestamp desc
+`;
+    console.log(query);
+    const data = await client.query(query);
+    return data;
+};
+
+exports.allRecordsByAllVehicleNoAndAllRfidPoint = async (area, from, to, vno, rfidIp) => {
+    const query = `select * from all_records
+inner join rfids on rfids.rfid_ip_address = all_records.rfid_ip_address 
+inner join mines on mines.mine_id = rfids.mine_id
+inner join areas on areas.area_id = rfids.area_id
+where areas.area_id = ` + "'" + area + "'" + ` and
+all_records.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by all_records.timestamp desc
+`;
+    console.log(query);
+    const data = await client.query(query);
+    return data;
+};
+
+exports.allRecordsByAllVehicleNoAndAllRfidPointAllMines = async (area, from, to, vno, rfidIp) => {
+    const query = `select * from all_records
+inner join rfids on rfids.rfid_ip_address = all_records.rfid_ip_address 
+inner join mines on mines.mine_id = rfids.mine_id
+inner join areas on areas.area_id = rfids.area_id
+where areas.area_id = ` + "'" + area + "'" + ` and
+all_records.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by all_records.timestamp desc
+`;
+    console.log(query);
+    const data = await client.query(query);
+    return data;
+};
+
+exports.allRecordsByRfidPoint = async (area, from, to, rfidIp) => {
+    const query = `select * from all_records
+inner join rfids on rfids.rfid_ip_address = all_records.rfid_ip_address 
+inner join mines on mines.mine_id = rfids.mine_id
+inner join areas on areas.area_id = rfids.area_id
+where areas.area_id = ` + "'" + area + "'" + ` and
+all_records.rfid_ip_address = ` + "'" + rfidIp + "'" + ` and
+all_records.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by all_records.timestamp desc
+`;
+    console.log(query);
+    const data = await client.query(query);
+    return data;
+};
+
+exports.allRecordsByAllRfidPoint = async (area, from, to, rfidIp) => {
+    const query = `select * from all_records
+inner join rfids on rfids.rfid_ip_address = all_records.rfid_ip_address 
+inner join mines on mines.mine_id = rfids.mine_id
+inner join areas on areas.area_id = rfids.area_id
+where areas.area_id = ` + "'" + area + "'" + ` and
+all_records.timestamp between ` + "'" + from + "'" + `::timestamp - interval '5.3 hour' and  ` + "'" + to + "'" + `::timestamp  - interval '5.3 hour' order by all_records.timestamp desc
+`;
+    console.log(query);
+    const data = await client.query(query);
+    return data;
+};
+
 exports.getMinesByMineIdAndAreaId = async (mine_id, area_id) => {
     const query = "select * from mines where mine_id = " + mine_id + " and area_id = " + area_id;
     const data = await client.query(query);
@@ -220,6 +302,15 @@ exports.updateVehicleStatus = async (vehicle_id,status) => {
 
 exports.createManualVehicle = async (vno,fv,tv,timestamp,ip) => {
     const query = `insert into manual_vehicles (vehicle_no,front_view,top_view,timestamp,rfid_ip_address) values (` + "'" + vno + "'" + `,` + "'" + fv + "'" + `,` + "'" + tv + "'" + `,` + "'" + timestamp + "'" +`,` + "'" + ip + "'" + `)`;
+    //const query = `insert into manual_vehicles (vehicle_no,front_view,top_view,timestamp,rfid_ip_address)
+    //values ("'" +vno+  "'" + "," + "'" +front_view+  "'" + "," + "'" +top_view+  "'" + "," + "'" + timestamp+  "'" + "," + "'" +rfid_ip_address+  "'" + ``)`;
+    console.log(query);
+    const data = await client.query(query);
+    return data;
+}
+
+exports.createAllRecords = async (vno,fv,tv,timestamp,ip) => {
+    const query = `insert into all_records (vehicle_no,front_view,top_view,timestamp,rfid_ip_address) values (` + "'" + vno + "'" + `,` + "'" + fv + "'" + `,` + "'" + tv + "'" + `,` + "'" + timestamp + "'" +`,` + "'" + ip + "'" + `)`;
     //const query = `insert into manual_vehicles (vehicle_no,front_view,top_view,timestamp,rfid_ip_address)
     //values ("'" +vno+  "'" + "," + "'" +front_view+  "'" + "," + "'" +top_view+  "'" + "," + "'" + timestamp+  "'" + "," + "'" +rfid_ip_address+  "'" + ``)`;
     console.log(query);

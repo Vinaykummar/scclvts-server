@@ -217,6 +217,7 @@ exports.getVehicleRouteRfidPoint = async (req, res, next) => {
     console.log(req.params.vehicle_no);
     console.log(req.body.front_view);
     console.log(req.body.top_view);
+    await postgress.createAllRecords(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
     let route;
     let data;
     try {
@@ -535,6 +536,7 @@ exports.addToAllowedTrips = async (req,res) => {
     console.log(req.params.vehicle_no);
     console.log(req.body.front_view);
     console.log(req.body.top_view);
+    await postgress.createAllRecords(req.params.vehicle_no, req.body.front_view, req.body.top_view, new Date().toISOString(), req.params.rfid_ip);
     let route;
     let data;
     try {
@@ -1000,6 +1002,71 @@ exports.getTripReportsByPoint = async (req, res, next) => {
             res.send(data.rows);
 
 
+    } catch (e) {
+        res.send(e.stack);
+    }
+
+}
+
+exports.getAllRecordsByRfidPoint = async (req, res, next) => {
+    const point = req.body.payload.point;
+    const mine = req.body.payload.mine_type;
+    const area = req.body.payload.area_type;
+    const from = req.body.payload.from;
+    const to = req.body.payload.to;
+    const rfidIp = req.body.payload.rfidIp;
+
+    try {   
+            if(rfidIp === 'all') {
+                const data = await postgress.allRecordsByAllRfidPoint(
+                 area,from, to, rfidIp
+                );
+                console.log(data);
+                res.send(data.rows);
+            } else {
+                const data = await postgress.allRecordsByRfidPoint(
+                    area, from, to,rfidIp
+                );
+                console.log(data);
+                res.send(data.rows);
+            }
+    } catch (e) {
+        res.send(e.stack);
+    }
+
+}
+
+exports.getAllRecordsByRfidPointAndVehicle = async (req, res, next) => {
+    const point = req.body.payload.point;
+    const mine = req.body.payload.mine_type;
+    const area = req.body.payload.area_type;
+    const from = req.body.payload.from;
+    const to = req.body.payload.to;
+    const rfidIp = req.body.payload.rfidIp;
+    const vno = req.body.payload.vehicle_no;
+
+    try {  
+            if(vno === 'all' && rfidIp === 'all') {
+                const data = await postgress.allRecordsByAllVehicleNoAndAllRfidPoint(
+                    area, from, to, vno, rfidIp
+                );
+                console.log(data);
+                res.send(data.rows);
+            } else {
+                if(vno === 'all') {
+                    const data = await postgress.allRecordsByAllVehicleNoAndRfidPoint(
+                        area, from, to, vno, rfidIp
+                    );
+                    console.log(data);
+                    res.send(data.rows);
+                } else {
+                    const data = await postgress.allRecordsByVehicleNoAndRfidPoint(
+                        area, from, to, vno, rfidIp
+                    );
+                    console.log(data);
+                    res.send(data.rows);
+                }
+            }
     } catch (e) {
         res.send(e.stack);
     }
