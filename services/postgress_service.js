@@ -649,7 +649,7 @@ where vehicles.vehicle_no = ` + "'" + vehicle + "'" +  ` and areas.area_id = ` +
 };
 
 exports.getTripDetailsByTripId = async (id) => {
-    const query = `select * from trip_info where trip_id =` +id+ `order by trip_info_id`;
+    const query = `select * from trip_info where trip_id =` +id+ ` order by trip_info_id`;
     const data = await client.query(query);
     return data;
 };
